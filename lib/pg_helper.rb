@@ -1,0 +1,14 @@
+class PGHelper
+  
+  def self.connect
+    
+    PG.connect(
+      :host => ENV['QS_HOST'],
+      :port => ENV['QS_PORT'],
+      :dbname => ENV['QS_DBNAME'],
+      :user => ENV['QS_USER'],
+      :password => ENV['QS_PASSWORD'])    
+    
+  end
+  
+end
