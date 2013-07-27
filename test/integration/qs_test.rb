@@ -32,6 +32,7 @@ class QSTest < Test::Unit::TestCase
   def test_query_api_not_found
     get '/qs/group/x'    
     assert !last_response.ok?
+    assert '', last_response.body    
   end
   
 #  def test_simple_query
