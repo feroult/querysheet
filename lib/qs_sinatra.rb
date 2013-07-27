@@ -1,6 +1,7 @@
 class QSSinatra < Sinatra::Application  
   
   get '/qs/*' do |api|
+    content_type :json
     qs.execute_query(api)
   end    
   
