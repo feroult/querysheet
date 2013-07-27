@@ -1,11 +1,5 @@
 require 'test_helper'
 
-class QSMock < QS
-  def execute(api)
-    '{}'
-  end  
-end
-
 class APITest < Test::Unit::TestCase
   
   include Rack::Test::Methods
@@ -15,23 +9,29 @@ class APITest < Test::Unit::TestCase
   end
      
   def setup
-    @qs = QSMock.new
+    @qs = QS.new
     QSSinatra.qs = @qs
   end
       
   def test_query_api_setup
-    @qs.query_api(:api => 'group/x', :query => '')
+    @qs.query_api(:api => 'group/x', :query => 'select 1 x')
     
     get '/qs/group/x'
         
     assert last_response.ok?
     assert_equal "application/json;charset=utf-8", last_response.content_type
-    assert_equal '{}', last_response.body
+    assert_equal '[{"x":"1"}]', last_response.body
   end
   
   def test_query_api_not_found
     get '/qs/group/x'    
     assert !last_response.ok?
     assert '', last_response.body    
+  end
+  
+  def test_query_api_result
+    @qs.query_api(:api => 'group/x', :query => "select 'xxx' as name, 10 as age")
+    get '/qs/group/x'    
+    assert_equal '[{"name":"xxx","age":"10"}]', last_response.body
   end
 end

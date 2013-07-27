@@ -12,11 +12,12 @@ class QS
   end
   
   def execute(api)
-    execute_query(api_map[:api])
+    execute_query(api_map[api])
   end
   
   def execute_query(query)
+    PGHelper.query_as_json(query)
   end
-    
+
   private :api_map
 end
