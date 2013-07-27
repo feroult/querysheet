@@ -13,16 +13,6 @@ class APITest < Test::Unit::TestCase
     QSSinatra.qs = @qs
   end
       
-  def test_query_api_setup
-    @qs.query_api(:api => 'group/x', :query => 'select 1 x')
-    
-    get '/qs/group/x'
-        
-    assert last_response.ok?
-    assert_equal "application/json;charset=utf-8", last_response.content_type
-    assert_equal '[{"x":"1"}]', last_response.body
-  end
-  
   def test_query_api_not_found
     get '/qs/group/x'    
     assert !last_response.ok?
@@ -32,6 +22,9 @@ class APITest < Test::Unit::TestCase
   def test_query_api_result
     @qs.query_api(:api => 'group/x', :query => "select 'xxx' as name, 10 as age")
     get '/qs/group/x'    
+
+    assert last_response.ok?
+    assert_equal "application/json;charset=utf-8", last_response.content_type    
     assert_equal '[{"name":"xxx","age":"10"}]', last_response.body
   end
 end
