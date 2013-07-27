@@ -7,7 +7,7 @@ class QSSinatra < Sinatra::Application
   end
 
   def not_found
-    response.status = 400
+    response.status = 404
     ''
   end
   

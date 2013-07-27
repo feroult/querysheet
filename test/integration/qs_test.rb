@@ -2,7 +2,7 @@ require 'test_helper'
 
 class QSMock < QS
   def execute_query(api)
-    '{"xpto": 123}'
+    '{}'
   end  
 end
 
@@ -26,7 +26,7 @@ class QSTest < Test::Unit::TestCase
         
     assert last_response.ok?
     assert_equal "application/json;charset=utf-8", last_response.content_type
-    assert_equal '{"xpto": 123}', last_response.body
+    assert_equal '{}', last_response.body
   end
   
   def test_query_api_not_found
@@ -34,8 +34,4 @@ class QSTest < Test::Unit::TestCase
     assert !last_response.ok?
     assert '', last_response.body    
   end
-  
-#  def test_simple_query
-#    QS.query_api(:api => '/group/x', :query => '')
-#  end
 end
