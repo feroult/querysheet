@@ -8,4 +8,16 @@ class PGHelper
       :password => ENV['QS_PASSWORD'])
   end
 
+  def self.query_as_json(query)
+    conn = connect    
+    
+    rows = conn.exec(query) do |result|
+      result.inject([]) do |rows, row|
+        rows << row
+      end      
+    end    
+    
+    rows.to_json
+  end
+   
 end

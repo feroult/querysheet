@@ -12,4 +12,9 @@ class SetupTest < Test::Unit::TestCase
     end
   end
 
+  def test_query_as_json
+    result = PGHelper.query_as_json("select 'xpto' as value")    
+    assert_equal '[{"value":"xpto"}]', result
+  end
+  
 end

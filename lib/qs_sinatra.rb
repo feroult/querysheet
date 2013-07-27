@@ -3,7 +3,7 @@ class QSSinatra < Sinatra::Application
   get '/qs/*' do |api|
     content_type :json    
     return not_found if qs.invalid?(api)    
-    qs.execute_query(api)
+    qs.execute(api)
   end
 
   def not_found

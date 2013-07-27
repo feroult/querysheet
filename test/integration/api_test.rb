@@ -1,12 +1,12 @@
 require 'test_helper'
 
 class QSMock < QS
-  def execute_query(api)
+  def execute(api)
     '{}'
   end  
 end
 
-class QSTest < Test::Unit::TestCase
+class APITest < Test::Unit::TestCase
   
   include Rack::Test::Methods
 
