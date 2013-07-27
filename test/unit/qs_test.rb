@@ -15,5 +15,4 @@ class QSTest < Test::Unit::TestCase
     assert last_response.ok?
     assert_equal 'xpto', last_response.body
   end
-  
 end
