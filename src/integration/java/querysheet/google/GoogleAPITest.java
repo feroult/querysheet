@@ -46,7 +46,7 @@ public class GoogleAPITest {
 				.setServiceAccountScopes(Arrays.asList("https://spreadsheets.google.com/feeds", "https://docs.google.com/feeds"))
 				.setServiceAccountPrivateKeyFromP12File(new File(Setup.getServiceAccountKeyPath())).build();
 
-		drive = new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
+		drive = new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).setApplicationName("Query Sheet").build();
 
 		service = new SpreadsheetService("Query Sheet");
 		service.setOAuth2Credentials(credential);
@@ -60,7 +60,7 @@ public class GoogleAPITest {
 	}
 
 	private void deleteSpreadSheet(String key) throws IOException {
-		drive.files().delete(key).execute();	
+		drive.files().delete(key).execute();
 	}
 
 	private String createSpreadSheet() throws IOException {
@@ -88,7 +88,7 @@ public class GoogleAPITest {
 		URL cellFeedUrl = worksheet.getCellFeedUrl();
 		CellFeed cellFeed = service.getFeed(cellFeedUrl, CellFeed.class);
 
-		CellEntry cellEntry = new CellEntry(1, 1, "aa");
+		CellEntry cellEntry = new CellEntry(1, 1, "query sheet");
 		cellFeed.insert(cellEntry);
 	}
 }
