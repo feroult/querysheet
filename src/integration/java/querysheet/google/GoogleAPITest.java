@@ -9,7 +9,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.api.services.drive.Drive;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CellEntry;
 import com.google.gdata.data.spreadsheet.CellFeed;
@@ -20,38 +19,22 @@ import com.google.gdata.util.ServiceException;
 
 public class GoogleAPITest {
 
-	private Drive driveService;
-
 	private SpreadsheetService spreadsheetService;
+
+	private GoogleAPI google;
 
 	@Before
 	public void before() {		
-		GoogleAPI google = new GoogleAPI();
+		google = new GoogleAPI();
 		
-		driveService = google.driveService();		
 		spreadsheetService = google.spreadsheetService();				
 	}
 
 	@Test
 	public void testChangeSpreadSheet() throws GeneralSecurityException, IOException, ServiceException {
-		String key = createSpreadSheet();
+		String key = google.drive().createSpreadsheet();
 		changeSpreadsheet(key);
-		deleteSpreadSheet(key);
-	}
-
-	private void deleteSpreadSheet(String key) throws IOException {
-		driveService.files().delete(key).execute();
-	}
-
-	private String createSpreadSheet() throws IOException {
-		com.google.api.services.drive.model.File file = new com.google.api.services.drive.model.File();
-
-		file.setTitle("simple test");
-		file.setMimeType("application/vnd.google-apps.spreadsheet");
-
-		file = driveService.files().insert(file).execute();
-
-		return file.getId();
+		google.drive().delete(key);
 	}
 
 	private void changeSpreadsheet(String key) throws MalformedURLException, IOException, ServiceException {

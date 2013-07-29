@@ -17,6 +17,8 @@ import com.google.gdata.client.spreadsheet.SpreadsheetService;
 public class GoogleAPI {
 
 	private Credential credential;
+	
+	private DriveAPI drive;
 
 	public GoogleAPI() {
 		try {
@@ -40,7 +42,7 @@ public class GoogleAPI {
 		return new GsonFactory();
 	}
 
-	public Drive driveService() {
+	private Drive driveService() {
 		return new Drive.Builder(getTransport(), getJsonFactory(), credential).setApplicationName("Query Sheet")
 				.build();
 	}
@@ -49,6 +51,13 @@ public class GoogleAPI {
 		SpreadsheetService service = new SpreadsheetService("Query Sheet");
 		service.setOAuth2Credentials(credential);
 		return service;
+	}
+
+	public DriveAPI drive() {
+		if(drive == null) {
+			drive = new DriveAPI(driveService());
+		}
+		return drive;
 	}
 
 }
