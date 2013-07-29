@@ -25,7 +25,7 @@ public class GoogleAPITest {
 	private SpreadsheetService spreadsheetService;
 
 	@Before
-	public void before() throws GeneralSecurityException, IOException {		
+	public void before() {		
 		GoogleAPI google = new GoogleAPI();
 		
 		driveService = google.driveService();		

@@ -57,6 +57,10 @@
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-drive</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -172,6 +176,11 @@
 				<groupId>com.google.apis</groupId>
 				<artifactId>google-api-services-drive</artifactId>
 				<version>v2-rev89-1.15.0-rc</version>
+			</dependency>
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>9.2-1003-jdbc4</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
