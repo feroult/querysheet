@@ -1,0 +1,54 @@
+package querysheet.google;
+
+import java.io.File;
+import java.util.Arrays;
+
+import querysheet.utils.Setup;
+
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.gdata.client.spreadsheet.SpreadsheetService;
+
+public class GoogleAPI {
+
+	private Credential credential;
+
+	public GoogleAPI() {
+		try {
+			credential = new GoogleCredential.Builder()
+					.setTransport(getTransport())
+					.setJsonFactory(getJsonFactory())
+					.setServiceAccountId(Setup.getServiceAccountEmail())
+					.setServiceAccountScopes(
+							Arrays.asList("https://spreadsheets.google.com/feeds", "https://docs.google.com/feeds"))
+					.setServiceAccountPrivateKeyFromP12File(new File(Setup.getServiceAccountKeyPath())).build();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private HttpTransport getTransport() {
+		return new NetHttpTransport();
+	}
+
+	private JsonFactory getJsonFactory() {
+		return new GsonFactory();
+	}
+
+	public Drive driveService() {
+		return new Drive.Builder(getTransport(), getJsonFactory(), credential).setApplicationName("Query Sheet")
+				.build();
+	}
+
+	public SpreadsheetService spreadsheetService() {
+		SpreadsheetService service = new SpreadsheetService("Query Sheet");
+		service.setOAuth2Credentials(credential);
+		return service;
+	}
+
+}
