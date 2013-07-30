@@ -1,7 +1,5 @@
 package querysheet.google;
 
-import java.io.IOException;
-
 import com.google.api.services.drive.Drive;
 
 public class DriveAPI {
@@ -27,7 +25,11 @@ public class DriveAPI {
 		}
 	}
 
-	public void delete(String key) throws IOException {
-		driveService.files().delete(key).execute();
+	public void delete(String key)  {
+		try {
+			driveService.files().delete(key).execute();
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
