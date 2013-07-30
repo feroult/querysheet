@@ -20,6 +20,8 @@ public class GoogleAPI {
 	
 	private DriveAPI drive;
 
+	private SpreadsheetAPI spreadsheet;
+
 	public GoogleAPI() {
 		try {
 			credential = new GoogleCredential.Builder()
@@ -58,6 +60,13 @@ public class GoogleAPI {
 			drive = new DriveAPI(driveService());
 		}
 		return drive;
+	}
+
+	public SpreadsheetAPI spreadsheet(String key) {
+		if(spreadsheet == null) {
+			spreadsheet = new SpreadsheetAPI(spreadsheetService());
+		} 
+		return spreadsheet.key(key);
 	}
 
 }

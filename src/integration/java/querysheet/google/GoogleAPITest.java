@@ -33,8 +33,12 @@ public class GoogleAPITest {
 	@Test
 	public void testChangeSpreadSheet() throws GeneralSecurityException, IOException, ServiceException {
 		String key = google.drive().createSpreadsheet();
-		changeSpreadsheet(key);
+		changeSpreadsheetX(key);
 		google.drive().delete(key);
+	}
+
+	private void changeSpreadsheetX(String key) {
+		google.spreadsheet(key).changeCell(1, 1, "xpto");
 	}
 
 	private void changeSpreadsheet(String key) throws MalformedURLException, IOException, ServiceException {
