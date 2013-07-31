@@ -21,10 +21,11 @@ public class GoogleAPITest {
 		assertEquals("xpto", google.spreadsheet(key).getValue(1, 1));		
 		google.drive().delete(key);
 	}
-		
+
+	@Test
 	public void testSpreadSheetTableUpdate() {		
-		String key = google.drive().createSpreadsheet();				
-		google.spreadsheet(key).worksheet("xpto").update(mockUpdateSet());		
+		google.spreadsheet("0AsxNRtEKJEOadC10a3MtMDVabmRRc0dDY0lNQXNTQ3c").update(mockUpdateSet());		
+		//google.spreadsheet("0AsxNRtEKJEOadC10a3MtMDVabmRRc0dDY0lNQXNTQ3c").setValue(1, 1, "xpto");
 	}
 
 	private SpreadsheetUpdateSet mockUpdateSet() {
