@@ -122,20 +122,14 @@ public class SpreadsheetAPI {
 
 	public void update(SpreadsheetUpdateSet updateSet) {
 		try {
-			updateCells(updateSet);
+			CellFeed cellFeed = queryCellFeedForUpdate(updateSet);
+			CellFeed batchRequest = createBatchRequest(cellFeed, updateSet);
+			CellFeed batchResponse = executeBatchRequest(cellFeed, batchRequest);
+
+			checkBatchResponse(batchResponse);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	private void updateCells(SpreadsheetUpdateSet updateSet) throws IOException, ServiceException,
-			BatchInterruptedException, MalformedURLException {
-
-		CellFeed cellFeed = queryCellFeedForUpdate(updateSet);
-		CellFeed batchRequest = createBatchRequest(cellFeed, updateSet);
-		CellFeed batchResponse = executeBatchRequest(cellFeed, batchRequest);
-
-		checkBatchResponse(batchResponse);
 	}
 
 	private CellFeed executeBatchRequest(CellFeed cellFeed, CellFeed batchRequest) throws IOException,
@@ -152,7 +146,7 @@ public class SpreadsheetAPI {
 		List<CellEntry> cellEntries = cellFeed.getEntries();
 
 		CellFeed batchRequest = new CellFeed();
-		
+
 		int count = 0;
 
 		for (int i = 1; i <= updateSet.rows(); i++) {
@@ -168,16 +162,34 @@ public class SpreadsheetAPI {
 				count++;
 			}
 		}
-		
+
 		return batchRequest;
 	}
 
 	private CellFeed queryCellFeedForUpdate(SpreadsheetUpdateSet updateSet) throws IOException, ServiceException {
+		adjustWorksheetDimensions(updateSet);
+
 		CellQuery query = new CellQuery(worksheet.getCellFeedUrl());
-		query.setRange(MessageFormat.format("A{0}:J{1}", updateSet.rows(), updateSet.cols()));
+
+		query.setMinimumRow(1);
+		query.setMaximumRow(updateSet.rows());
+		query.setMinimumCol(1);
+		query.setMaximumCol(updateSet.cols());
+
 		query.setReturnEmpty(true);
 		CellFeed cellFeed = spreadsheetService.getFeed(query, CellFeed.class);
 		return cellFeed;
+	}
+
+	private void adjustWorksheetDimensions(SpreadsheetUpdateSet updateSet) throws IOException, ServiceException {
+		if (worksheet.getColCount() == updateSet.cols() && worksheet.getRowCount() == updateSet.rows()) {
+			return;
+		}
+
+		worksheet.setColCount(updateSet.cols());
+		worksheet.setRowCount(updateSet.rows());
+
+		worksheet.update();
 	}
 
 	private void checkBatchResponse(CellFeed batchResponse) {

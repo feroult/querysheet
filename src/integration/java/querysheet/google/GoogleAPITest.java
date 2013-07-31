@@ -2,6 +2,8 @@ package querysheet.google;
 
 import static org.junit.Assert.assertEquals;
 
+import java.text.MessageFormat;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,7 +30,22 @@ public class GoogleAPITest {
 	}
 
 	private SpreadsheetUpdateSet mockUpdateSet() {
-		// TODO Auto-generated method stub
-		return null;
+		return new SpreadsheetUpdateSet() {			
+			@Override
+			public int rows() {				
+				return 5;
+			}
+			
+			@Override
+			public String getValue(int i, int j) {				
+				return MessageFormat.format("i={0}, j={1}", i, j);
+			}
+			
+			@Override
+			public int cols() {				
+				return 5;
+			}
+		}; 
+		
 	}
 }
