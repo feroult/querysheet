@@ -77,4 +77,14 @@ public class SpreadsheetAPI {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public SpreadsheetAPI worksheet(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void update(SpreadsheetUpdateSet updateSet) {
+		// TODO Auto-generated method stub
+		
+	}
 }

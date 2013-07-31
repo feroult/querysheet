@@ -21,4 +21,14 @@ public class GoogleAPITest {
 		assertEquals("xpto", google.spreadsheet(key).getValue(1, 1));		
 		google.drive().delete(key);
 	}
+		
+	public void testSpreadSheetTableUpdate() {		
+		String key = google.drive().createSpreadsheet();				
+		google.spreadsheet(key).worksheet("xpto").update(mockUpdateSet());		
+	}
+
+	private SpreadsheetUpdateSet mockUpdateSet() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
