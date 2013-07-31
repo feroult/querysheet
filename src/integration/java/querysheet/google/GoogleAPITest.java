@@ -24,8 +24,7 @@ public class GoogleAPITest {
 
 	@Test
 	public void testSpreadSheetTableUpdate() {		
-		//google.spreadsheet("0AsxNRtEKJEOadC10a3MtMDVabmRRc0dDY0lNQXNTQ3c").update(mockUpdateSet());		
-		google.spreadsheet("0AsxNRtEKJEOadC10a3MtMDVabmRRc0dDY0lNQXNTQ3c").worksheet("xpto").setValue(1, 1, "lala");
+		google.spreadsheet("0AsxNRtEKJEOadC10a3MtMDVabmRRc0dDY0lNQXNTQ3c").worksheet("xpto").update(mockUpdateSet());				
 	}
 
 	private SpreadsheetUpdateSet mockUpdateSet() {

@@ -3,6 +3,7 @@ package querysheet.google;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.List;
 
 import com.google.gdata.client.batch.BatchInterruptedException;
@@ -78,120 +79,115 @@ public class SpreadsheetAPI {
 	}
 
 	public SpreadsheetAPI worksheet(String title) {
-		if(worksheet != null && worksheet.getTitle().getPlainText().equals(title)) {
+		if (worksheet != null && worksheet.getTitle().getPlainText().equals(title)) {
 			return this;
 		}
-		
+
 		try {
 			worksheet = getWorksheetByTitle(title);
-			
-			if(worksheet == null) {
+
+			if (worksheet == null) {
 				worksheet = createWorksheet(title);
 			}
-						
+
 			return this;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		}		
+		}
 	}
 
 	private WorksheetEntry createWorksheet(String title) throws IOException, ServiceException {
-	    WorksheetEntry worksheet = new WorksheetEntry();
-	    worksheet.setTitle(new PlainTextConstruct(title));
-	    worksheet.setColCount(10);
-	    worksheet.setRowCount(10);
-	    return spreadsheetService.insert(spreadsheet.getWorksheetFeedUrl(), worksheet);
+		WorksheetEntry worksheet = new WorksheetEntry();
+		worksheet.setTitle(new PlainTextConstruct(title));
+		worksheet.setColCount(10);
+		worksheet.setRowCount(10);
+		return spreadsheetService.insert(spreadsheet.getWorksheetFeedUrl(), worksheet);
 	}
 
 	private WorksheetEntry getWorksheetByTitle(String title) throws IOException, ServiceException {
 		WorksheetQuery query = new WorksheetQuery(spreadsheet.getWorksheetFeedUrl());
-		
+
 		query.setTitleExact(true);
 		query.setTitleQuery(title);
-		
+
 		WorksheetFeed worksheetFeed = spreadsheetService.getFeed(query, WorksheetFeed.class);
 		List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
-		
-		if(worksheets.size() == 0) {
+
+		if (worksheets.size() == 0) {
 			return null;
 		}
-		
+
 		return worksheets.get(0);
 	}
 
 	public void update(SpreadsheetUpdateSet updateSet) {
 		try {
-			CellFeed batchResponse = updateCells();
-
-			printStatus(batchResponse);
-
+			updateCells(updateSet);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private CellFeed updateCells() throws IOException, ServiceException,
+	private void updateCells(SpreadsheetUpdateSet updateSet) throws IOException, ServiceException,
 			BatchInterruptedException, MalformedURLException {
 
-		CellFeed cellFeed = queryCellFeedForUpdate(worksheet);
+		CellFeed cellFeed = queryCellFeedForUpdate(updateSet);
+		CellFeed batchRequest = createBatchRequest(cellFeed, updateSet);
+		CellFeed batchResponse = executeBatchRequest(cellFeed, batchRequest);
 
+		checkBatchResponse(batchResponse);
+	}
+
+	private CellFeed executeBatchRequest(CellFeed cellFeed, CellFeed batchRequest) throws IOException,
+			ServiceException, BatchInterruptedException, MalformedURLException {
+		Link batchLink = cellFeed.getLink(Link.Rel.FEED_BATCH, Link.Type.ATOM);
+
+		spreadsheetService.setHeader("If-Match", "*");
+		CellFeed batchResponse = spreadsheetService.batch(new URL(batchLink.getHref()), batchRequest);
+		spreadsheetService.setHeader("If-Match", null);
+		return batchResponse;
+	}
+
+	private CellFeed createBatchRequest(CellFeed cellFeed, SpreadsheetUpdateSet updateSet) {
 		List<CellEntry> cellEntries = cellFeed.getEntries();
 
 		CellFeed batchRequest = new CellFeed();
+		
 		int count = 0;
 
-		for (int i = 1; i <= 10; i++) {
-			for (int j = 1; j <= 10; j++) {
+		for (int i = 1; i <= updateSet.rows(); i++) {
+			for (int j = 1; j <= updateSet.cols(); j++) {
 				BatchOperationType batchOperationType = BatchOperationType.UPDATE;
-				// String id = createId(i, j);
-				CellEntry batchEntry = new CellEntry(cellEntries.get(count));
-				batchEntry.changeInputValueLocal(createId(i, j));
+				CellEntry sourceEntry = cellEntries.get(count);
+				CellEntry batchEntry = new CellEntry(sourceEntry);
+				batchEntry.changeInputValueLocal(updateSet.getValue(i, j));
 				BatchUtils.setBatchId(batchEntry, String.valueOf(count));
 				BatchUtils.setBatchOperationType(batchEntry, batchOperationType);
 				batchRequest.getEntries().add(batchEntry);
 
 				count++;
 			}
-
 		}
-
-		// Submit the update
-		// CellFeed cellFeed =
-		// spreadsheetService.getFeed(worksheet.getCellFeedUrl(),
-		// CellFeed.class);
-
-		Link batchLink = cellFeed.getLink(Link.Rel.FEED_BATCH, Link.Type.ATOM);
-
-		spreadsheetService.setHeader("If-Match", "*");
-		CellFeed batchResponse = spreadsheetService.batch(new URL(batchLink.getHref()), batchRequest);
-		spreadsheetService.setHeader("If-Match", null);
-
-		return batchResponse;
+		
+		return batchRequest;
 	}
 
-	private CellFeed queryCellFeedForUpdate(WorksheetEntry worksheet) throws IOException, ServiceException {
+	private CellFeed queryCellFeedForUpdate(SpreadsheetUpdateSet updateSet) throws IOException, ServiceException {
 		CellQuery query = new CellQuery(worksheet.getCellFeedUrl());
-		query.setRange("A1:J10");
+		query.setRange(MessageFormat.format("A{0}:J{1}", updateSet.rows(), updateSet.cols()));
 		query.setReturnEmpty(true);
 		CellFeed cellFeed = spreadsheetService.getFeed(query, CellFeed.class);
 		return cellFeed;
 	}
 
-	private String createId(int i, int j) {
-		return "i=" + i + ", j=" + j;
-	}
-
-	private void printStatus(CellFeed batchResponse) {
-		boolean isSuccess = true;
+	private void checkBatchResponse(CellFeed batchResponse) {
 		for (CellEntry entry : batchResponse.getEntries()) {
 			String batchId = BatchUtils.getBatchId(entry);
 			if (!BatchUtils.isSuccess(entry)) {
-				isSuccess = false;
 				BatchStatus status = BatchUtils.getBatchStatus(entry);
-				System.out.printf("%s failed (%s) %s\n", batchId, status.getReason(), status.getContent());
+				throw new RuntimeException(MessageFormat.format("update failed batchId={0}, reason={1}", batchId,
+						status.getReason()));
 			}
 		}
-
-		System.out.println(isSuccess ? "\nBatch operations successful." : "\nBatch operations failed");
 	}
 }
