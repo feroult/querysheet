@@ -17,7 +17,7 @@ public class GoogleAPITest {
 	@Test
 	public void testChangeSpreadSheet() {
 		String key = google.drive().createSpreadsheet();		
-		google.spreadsheet(key).changeCell(1, 1, "xpto");		
+		google.spreadsheet(key).setValue(1, 1, "xpto");		
 		assertEquals("xpto", google.spreadsheet(key).getValue(1, 1));		
 		google.drive().delete(key);
 	}

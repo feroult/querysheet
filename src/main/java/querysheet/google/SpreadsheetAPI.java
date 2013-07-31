@@ -37,7 +37,7 @@ public class SpreadsheetAPI {
 		return this;
 	}
 
-	public void changeCell(int i, int j, String value) {
+	public void setValue(int i, int j, String value) {
 		try {
 			WorksheetEntry worksheet = firstWorksheet();
 	
