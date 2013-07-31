@@ -25,12 +25,15 @@ public class GoogleAPITest {
 	}
 
 	@Test
-	public void testSpreadSheetTableUpdate() {		
-		google.spreadsheet("0AsxNRtEKJEOadC10a3MtMDVabmRRc0dDY0lNQXNTQ3c").worksheet("xpto").update(mockUpdateSet());				
+	public void testSpreadSheetBatchUpdate() {		
+		String key = google.drive().createSpreadsheet();
+		google.spreadsheet(key).worksheet("xpto").batch(mockBatch());
+		assertEquals("i=1, j=1", google.spreadsheet(key).worksheet("xpto").getValue(1, 1));
+		google.drive().delete(key);
 	}
 
-	private SpreadsheetUpdateSet mockUpdateSet() {
-		return new SpreadsheetUpdateSet() {			
+	private SpreadsheetBatch mockBatch() {
+		return new SpreadsheetBatch() {			
 			@Override
 			public int rows() {				
 				return 5;

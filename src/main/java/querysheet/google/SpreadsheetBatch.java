@@ -1,6 +1,6 @@
 package querysheet.google;
 
-public interface SpreadsheetUpdateSet {
+public interface SpreadsheetBatch {
 
 	public int rows();
 

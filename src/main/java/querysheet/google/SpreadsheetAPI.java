@@ -120,10 +120,10 @@ public class SpreadsheetAPI {
 		return worksheets.get(0);
 	}
 
-	public void update(SpreadsheetUpdateSet updateSet) {
+	public void batch(SpreadsheetBatch batch) {
 		try {
-			CellFeed cellFeed = queryCellFeedForUpdate(updateSet);
-			CellFeed batchRequest = createBatchRequest(cellFeed, updateSet);
+			CellFeed cellFeed = queryCellFeedForUpdate(batch);
+			CellFeed batchRequest = createBatchRequest(cellFeed, batch);
 			CellFeed batchResponse = executeBatchRequest(cellFeed, batchRequest);
 
 			checkBatchResponse(batchResponse);
@@ -142,19 +142,19 @@ public class SpreadsheetAPI {
 		return batchResponse;
 	}
 
-	private CellFeed createBatchRequest(CellFeed cellFeed, SpreadsheetUpdateSet updateSet) {
+	private CellFeed createBatchRequest(CellFeed cellFeed, SpreadsheetBatch batch) {
 		List<CellEntry> cellEntries = cellFeed.getEntries();
 
 		CellFeed batchRequest = new CellFeed();
 
 		int count = 0;
 
-		for (int i = 1; i <= updateSet.rows(); i++) {
-			for (int j = 1; j <= updateSet.cols(); j++) {
+		for (int i = 1; i <= batch.rows(); i++) {
+			for (int j = 1; j <= batch.cols(); j++) {
 				BatchOperationType batchOperationType = BatchOperationType.UPDATE;
 				CellEntry sourceEntry = cellEntries.get(count);
 				CellEntry batchEntry = new CellEntry(sourceEntry);
-				batchEntry.changeInputValueLocal(updateSet.getValue(i, j));
+				batchEntry.changeInputValueLocal(batch.getValue(i, j));
 				BatchUtils.setBatchId(batchEntry, String.valueOf(count));
 				BatchUtils.setBatchOperationType(batchEntry, batchOperationType);
 				batchRequest.getEntries().add(batchEntry);
@@ -166,22 +166,22 @@ public class SpreadsheetAPI {
 		return batchRequest;
 	}
 
-	private CellFeed queryCellFeedForUpdate(SpreadsheetUpdateSet updateSet) throws IOException, ServiceException {
-		adjustWorksheetDimensions(updateSet);
+	private CellFeed queryCellFeedForUpdate(SpreadsheetBatch batch) throws IOException, ServiceException {
+		adjustWorksheetDimensions(batch);
 
 		CellQuery query = new CellQuery(worksheet.getCellFeedUrl());
 
 		query.setMinimumRow(1);
-		query.setMaximumRow(updateSet.rows());
+		query.setMaximumRow(batch.rows());
 		query.setMinimumCol(1);
-		query.setMaximumCol(updateSet.cols());
+		query.setMaximumCol(batch.cols());
 
 		query.setReturnEmpty(true);
 		CellFeed cellFeed = spreadsheetService.getFeed(query, CellFeed.class);
 		return cellFeed;
 	}
 
-	private void adjustWorksheetDimensions(SpreadsheetUpdateSet updateSet) throws IOException, ServiceException {
+	private void adjustWorksheetDimensions(SpreadsheetBatch updateSet) throws IOException, ServiceException {
 		if (worksheet.getColCount() == updateSet.cols() && worksheet.getRowCount() == updateSet.rows()) {
 			return;
 		}
