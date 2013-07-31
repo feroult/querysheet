@@ -122,7 +122,7 @@ public class SpreadsheetAPI {
 
 	public void batch(SpreadsheetBatch batch) {
 		try {
-			CellFeed cellFeed = queryCellFeedForUpdate(batch);
+			CellFeed cellFeed = queryCellFeedForBatch(batch);
 			CellFeed batchRequest = createBatchRequest(cellFeed, batch);
 			CellFeed batchResponse = executeBatchRequest(cellFeed, batchRequest);
 
@@ -166,7 +166,7 @@ public class SpreadsheetAPI {
 		return batchRequest;
 	}
 
-	private CellFeed queryCellFeedForUpdate(SpreadsheetBatch batch) throws IOException, ServiceException {
+	private CellFeed queryCellFeedForBatch(SpreadsheetBatch batch) throws IOException, ServiceException {
 		adjustWorksheetDimensions(batch);
 
 		CellQuery query = new CellQuery(worksheet.getCellFeedUrl());
