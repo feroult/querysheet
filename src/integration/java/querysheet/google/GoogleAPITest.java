@@ -17,15 +17,15 @@ public class GoogleAPITest {
 	@Test
 	public void testChangeSpreadSheet() {
 		String key = google.drive().createSpreadsheet();		
-		google.spreadsheet(key).setValue(1, 1, "xpto");		
-		assertEquals("xpto", google.spreadsheet(key).getValue(1, 1));		
+		google.spreadsheet(key).worksheet("first worksheet").setValue(1, 1, "xpto");		
+		assertEquals("xpto", google.spreadsheet(key).worksheet("first worksheet").getValue(1, 1));		
 		google.drive().delete(key);
 	}
 
 	@Test
 	public void testSpreadSheetTableUpdate() {		
-		google.spreadsheet("0AsxNRtEKJEOadC10a3MtMDVabmRRc0dDY0lNQXNTQ3c").update(mockUpdateSet());		
-		//google.spreadsheet("0AsxNRtEKJEOadC10a3MtMDVabmRRc0dDY0lNQXNTQ3c").setValue(1, 1, "xpto");
+		//google.spreadsheet("0AsxNRtEKJEOadC10a3MtMDVabmRRc0dDY0lNQXNTQ3c").update(mockUpdateSet());		
+		google.spreadsheet("0AsxNRtEKJEOadC10a3MtMDVabmRRc0dDY0lNQXNTQ3c").worksheet("xpto").setValue(1, 1, "lala");
 	}
 
 	private SpreadsheetUpdateSet mockUpdateSet() {
