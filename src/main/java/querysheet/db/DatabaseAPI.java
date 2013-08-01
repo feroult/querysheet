@@ -18,26 +18,21 @@ public class DatabaseAPI implements Closeable {
 	private ResultSet rs;
 
 	public DatabaseAPI() {
-		loadDriver();
-		connect();
-	}
-
-	private void connect() {
-		String url = Setup.getJdbcUrl();
-
 		try {
-			conn = DriverManager.getConnection(url, Setup.getUser(), Setup.getPassword());
-		} catch (SQLException e) {
+			loadDriver();
+			connect();
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+
 	}
 
-	private void loadDriver() {
-		try {
-			Class.forName("org.postgresql.Driver");
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+	private void connect() throws SQLException {
+		conn = DriverManager.getConnection(Setup.getJdbcUrl(), Setup.getUser(), Setup.getPassword());
+	}
+
+	private void loadDriver() throws ClassNotFoundException {
+		Class.forName("org.postgresql.Driver");
 	}
 
 	public DatabaseAPI query(String sql) {
@@ -51,49 +46,46 @@ public class DatabaseAPI implements Closeable {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public ResultSet resultSet() {
 		return rs;
 	}
 
 	public <T> List<T> map(ResultSetMapper<T> mapper, Class<T> clzz) {
 		try {
-		
+
 			List<T> result = new ArrayList<T>();
-			
-			while(rs.next()) {
+
+			while (rs.next()) {
 				result.add(mapper.map(rs));
 			}
-			
+
 			return result;
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public void close() {
-		closeResultSet();
-		closeConnection();
-	}
-
-	private void closeConnection() {
 		try {
-			conn.close();
-		} catch (SQLException e) {
+			closeResultSet();
+			closeConnection();
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		
 	}
 
-	private void closeResultSet() {
+	private void closeConnection() throws SQLException {
+		conn.close();
+	}
+
+	private void closeResultSet() throws SQLException {
 		if (rs == null) {
 			return;
 		}
-		try {
-			rs.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		rs.close();
 	}
 
 	public void exec(String sql) {
