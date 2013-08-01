@@ -55,7 +55,6 @@ public class DatabaseAPITest {
 			
 			return person;
 		}
-
 	}
 
 	private DatabaseAPI db;
@@ -77,14 +76,14 @@ public class DatabaseAPITest {
 
 	@Test
 	public void testSimpleQuery() throws SQLException {
-		ResultSet rs = db.query("select age from person limit 1").resultSet();
+		ResultSet rs = db.query("select age from people limit 1").resultSet();
 		rs.next();
 		assertEquals(21, rs.getInt(1));
 	}
 
 	@Test
 	public void testQueryMap() {
-		List<Person> people = db.query("select id, name, age from person order by id").map(new PersonMapper(),
+		List<Person> people = db.query("select id, name, age from people order by id").map(new PersonMapper(),
 				Person.class);
 
 		for (int i = 1; i <= MAX_PERSON; i++) {
@@ -98,20 +97,20 @@ public class DatabaseAPITest {
 
 	private void createPersonTable() {
 		try {
-			db.exec("drop table person");
+			db.exec("drop table people");
 		} catch(RuntimeException e) {			
 		}
 		
-		db.exec("create table person (id integer primary key, name text, age integer)");
+		db.exec("create table people (id integer primary key, name text, age integer)");
 	}
 
 	private void populatePeople() {
 		for (int i = 1; i <= MAX_PERSON; i++) {
-			db.exec(String.format("insert into person (id, name, age) values (%d, 'Person - %d', %d)", i, i, i + 20));
+			db.exec(String.format("insert into people (id, name, age) values (%d, 'Person - %d', %d)", i, i, i + 20));
 		}
 	}
 
 	private void dropPersonTable() {
-		db.exec("drop table person");
+		db.exec("drop table people");
 	}
 }

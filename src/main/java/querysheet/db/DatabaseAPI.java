@@ -24,7 +24,6 @@ public class DatabaseAPI implements Closeable {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	private void connect() throws SQLException {
@@ -74,7 +73,6 @@ public class DatabaseAPI implements Closeable {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		
 	}
 
 	private void closeConnection() throws SQLException {
