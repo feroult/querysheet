@@ -104,6 +104,4 @@ public class DatabaseAPI implements Closeable {
 			throw new RuntimeException(e);
 		}
 	}
-
-
 }
