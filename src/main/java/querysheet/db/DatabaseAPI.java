@@ -7,13 +7,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class QueryRunner implements Closeable {
+public class DatabaseAPI implements Closeable {
 
 	private Connection conn;
 
 	private ResultSet rs;
 
-	public QueryRunner() {
+	public DatabaseAPI() {
 		loadDriver();
 		connect();
 	}
@@ -36,7 +36,7 @@ public class QueryRunner implements Closeable {
 		}
 	}
 
-	public ResultSet exec(String sql) {
+	public ResultSet query(String sql) {
 		try {
 			closeResultSet();
 
@@ -71,5 +71,23 @@ public class QueryRunner implements Closeable {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static void singleExec(String sql) {
+		DatabaseAPI db = new DatabaseAPI();
+		try {		
+			db.exec(sql);
+		} finally {
+			db.close();
+		}				
+	}
+
+	public void exec(String sql) {
+		try {
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.execute();
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}		
 	}
 }
