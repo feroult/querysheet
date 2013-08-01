@@ -45,7 +45,6 @@ public class DatabaseAPITest {
 	}
 
 	public class PersonMapper implements ResultSetMapper<Person> {
-
 		@Override
 		public Person map(ResultSet rs) throws SQLException {
 			Person person = new Person();

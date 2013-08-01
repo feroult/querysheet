@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import querysheet.utils.Setup;
+
 public class DatabaseAPI implements Closeable {
 
 	private Connection conn;
@@ -21,12 +23,12 @@ public class DatabaseAPI implements Closeable {
 	}
 
 	private void connect() {
-		String url = "jdbc:postgresql://127.0.0.1/querysheet";
+		String url = Setup.getJdbcUrl();
 
 		try {
-			conn = DriverManager.getConnection(url, "qs", "qs");
+			conn = DriverManager.getConnection(url, Setup.getUser(), Setup.getPassword());
 		} catch (SQLException e) {
-
+			throw new RuntimeException(e);
 		}
 	}
 
