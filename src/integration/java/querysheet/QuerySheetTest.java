@@ -1,21 +1,31 @@
 package querysheet;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+
+import querysheet.db.DatabaseAPI;
 
 public class QuerySheetTest {
 
-	@Test
-	public void testLoadSimpleSheet() {
+	private DatabaseAPI db;
+
+	@Before
+	public void before() {
+		db = new DatabaseAPI();
+	}
+
+	@After
+	public void after() {
+		db.close();
+	}	
 	
-//		GoogleAPI google = new GoogleAPI();		
-//		
-//		String key = google.drive().createSpreadsheet("testing spreadsheet");
-//		
-//		String[][] values = new String[][] {{"a", "b"}, {"c", "d"}};
-//						
-//		google.spreadsheet(key).update(values);
-//
-//		google.drive().delete(key);
+	@Test
+	public void testLoadPeopleSheet() {
+		
+		
+		
+		
 	}
 	
 }
