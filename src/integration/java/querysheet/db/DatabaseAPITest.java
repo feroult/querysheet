@@ -11,8 +11,12 @@ import org.junit.Test;
 
 public class DatabaseAPITest {
 
+	private DatabaseAPI db;
+
 	@Before
 	public void before() {
+		db = new DatabaseAPI();
+
 		createSimpleTable();
 		populateSimpleTable();
 	}
@@ -20,21 +24,15 @@ public class DatabaseAPITest {
 	@After
 	public void after() {
 		dropSimpleTable();
+
+		db.close();
 	}
 
 	@Test
 	public void testSimpleQuery() throws SQLException {
-		DatabaseAPI db = new DatabaseAPI();
-
-		try {
-
-			ResultSet rs = db.query("select age from simple limit 1");
-			rs.next();
-			assertEquals(21, rs.getInt(1));
-
-		} finally {
-			db.close();
-		}
+		ResultSet rs = db.query("select age from simple limit 1");
+		rs.next();
+		assertEquals(21, rs.getInt(1));
 	}
 
 	@Test
@@ -43,24 +41,16 @@ public class DatabaseAPITest {
 	}
 
 	private void createSimpleTable() {
-		DatabaseAPI.singleExec("create table simple (id integer primary key, name text, age integer)");
+		db.exec("create table simple (id integer primary key, name text, age integer)");
 	}
 
 	private void populateSimpleTable() {
-		DatabaseAPI db = new DatabaseAPI();
-
-		try {
-
-			for (int i = 1; i <= 20; i++) {
-				db.exec(String.format("insert into simple (id, name, age) values (%d, 'Person - %d', %d)", i, i, i+20));
-			}
-
-		} finally {
-			db.close();
+		for (int i = 1; i <= 20; i++) {
+			db.exec(String.format("insert into simple (id, name, age) values (%d, 'Person - %d', %d)", i, i, i + 20));
 		}
 	}
 
 	private void dropSimpleTable() {
-		DatabaseAPI.singleExec("drop table simple");
+		db.exec("drop table simple");
 	}
 }

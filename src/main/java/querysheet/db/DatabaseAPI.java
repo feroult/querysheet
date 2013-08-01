@@ -59,7 +59,7 @@ public class DatabaseAPI implements Closeable {
 			conn.close();
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
-		}		
+		}
 	}
 
 	private void closeResultSet() {
@@ -72,22 +72,13 @@ public class DatabaseAPI implements Closeable {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	public static void singleExec(String sql) {
-		DatabaseAPI db = new DatabaseAPI();
-		try {		
-			db.exec(sql);
-		} finally {
-			db.close();
-		}				
-	}
 
 	public void exec(String sql) {
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.execute();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
-		}		
+		}
 	}
 }
