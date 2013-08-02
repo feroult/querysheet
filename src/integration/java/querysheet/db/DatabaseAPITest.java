@@ -12,38 +12,6 @@ import org.junit.Test;
 
 public class DatabaseAPITest {
 
-	private static final int MAX_PERSON = 20;
-
-	public class Person {
-		private int id;
-		private String name;
-		private int age;
-
-		public int getId() {
-			return id;
-		}
-
-		public void setId(int id) {
-			this.id = id;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public int getAge() {
-			return age;
-		}
-
-		public void setAge(int age) {
-			this.age = age;
-		}
-	}
-
 	public class PersonMapper implements ResultSetMapper<Person> {
 		@Override
 		public Person map(ResultSet rs) throws SQLException {
@@ -63,13 +31,13 @@ public class DatabaseAPITest {
 	public void before() {
 		db = new DatabaseAPI();
 
-		createPersonTable();
-		populatePeople();
+		Person.createPersonTable(db);
+		Person.populatePeople(db);
 	}
 
 	@After
 	public void after() {
-		dropPersonTable();
+		Person.dropPersonTable(db);
 
 		db.close();
 	}
@@ -86,31 +54,12 @@ public class DatabaseAPITest {
 		List<Person> people = db.query("select id, name, age from people order by id").map(new PersonMapper(),
 				Person.class);
 
-		for (int i = 1; i <= MAX_PERSON; i++) {
+		for (int i = 1; i <= Person.MAX_PERSON; i++) {
 			Person person = people.get(i-1);
 			
 			assertEquals(i, person.getId());
 			assertEquals("Person - " + i, person.getName());
 			assertEquals(i + 20, person.getAge());
 		}		
-	}
-
-	private void createPersonTable() {
-		try {
-			db.exec("drop table people");
-		} catch(RuntimeException e) {			
-		}
-		
-		db.exec("create table people (id integer primary key, name text, age integer)");
-	}
-
-	private void populatePeople() {
-		for (int i = 1; i <= MAX_PERSON; i++) {
-			db.exec(String.format("insert into people (id, name, age) values (%d, 'Person - %d', %d)", i, i, i + 20));
-		}
-	}
-
-	private void dropPersonTable() {
-		db.exec("drop table people");
 	}
 }
