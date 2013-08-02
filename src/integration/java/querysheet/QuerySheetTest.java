@@ -32,9 +32,13 @@ public class QuerySheetTest {
 	}	
 	
 	@Test
-	public void testLoadPeopleSheet() throws SQLException {		
+	public void testLoadPeopleSpreadsheet() throws SQLException {		
+		String key = google.drive().createSpreadsheet();
+		
 		TableToSpreadsheetBatch table = loadSpreadsheetTable();		
-		google.spreadsheet("0AsxNRtEKJEOadC10a3MtMDVabmRRc0dDY0lNQXNTQ3c").worksheet("people").batch(table);
+		google.spreadsheet(key).worksheet("people").batch(table);
+				
+		google.drive().delete(key);
 	}
 
 	private TableToSpreadsheetBatch loadSpreadsheetTable() throws SQLException {

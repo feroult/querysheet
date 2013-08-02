@@ -2,14 +2,15 @@ package querysheet.google;
 
 import static org.junit.Assert.assertEquals;
 
-import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class GoogleAPITest {
 
-	private class MockBatch implements SpreadsheetBatch {
+	private class MockPeopleBatch implements SpreadsheetBatch {
 		private String[][] table = new String[][] { { "id", "name", "age" }, { "1", "John", "10" },
 				{ "2", "Anne", "15" } };
 
@@ -47,14 +48,25 @@ public class GoogleAPITest {
 	@Test
 	public void testSpreadSheetBatchUpdate() {
 		String key = google.drive().createSpreadsheet();
-		google.spreadsheet(key).worksheet("xpto").batch(new MockBatch());
+		google.spreadsheet(key).worksheet("xpto").batch(new MockPeopleBatch());
 		assertEquals("John", google.spreadsheet(key).worksheet("xpto").getValue(2, 2));
+		
 		google.drive().delete(key);
 	}
 
 	@Test
 	public void testLoadSpreadsheetHash() {
-
+		String key = google.drive().createSpreadsheet();		
+		google.spreadsheet(key).worksheet("xpto").batch(new MockPeopleBatch());
+		
+		List<Map<String, String>> records = google.spreadsheet(key).worksheet("xpto").asMap();
+		
+		Map<String, String> record = records.get(0);		
+		assertEquals("1", record.get("id"));
+		assertEquals("John", record.get("name"));
+		assertEquals("10", record.get("age"));
+				
+		google.drive().delete(key);		
 	}
 
 }

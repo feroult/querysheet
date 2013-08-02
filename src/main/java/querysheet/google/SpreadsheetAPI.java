@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gdata.client.batch.BatchInterruptedException;
 import com.google.gdata.client.spreadsheet.CellQuery;
@@ -17,6 +20,8 @@ import com.google.gdata.data.batch.BatchStatus;
 import com.google.gdata.data.batch.BatchUtils;
 import com.google.gdata.data.spreadsheet.CellEntry;
 import com.google.gdata.data.spreadsheet.CellFeed;
+import com.google.gdata.data.spreadsheet.ListEntry;
+import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
@@ -201,5 +206,30 @@ public class SpreadsheetAPI {
 						status.getReason()));
 			}
 		}
+	}
+
+	public List<Map<String, String>> asMap() {
+		List<Map<String, String>> records = new ArrayList<Map<String, String>>();
+
+		try {
+			ListFeed feed = spreadsheetService.getFeed(worksheet.getListFeedUrl(), ListFeed.class);
+
+			for (ListEntry row : feed.getEntries()) {
+				records.add(loadRecord(row));
+			}
+
+			return records;
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private Map<String, String> loadRecord(ListEntry row) {
+		Map<String, String> record = new HashMap<String, String>();
+		for (String tag : row.getCustomElements().getTags()) {
+			record.put(tag, row.getCustomElements().getValue(tag));
+		}
+		return record;
 	}
 }
