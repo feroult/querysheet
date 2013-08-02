@@ -8,8 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import querysheet.db.DatabaseAPI;
-import querysheet.db.Person;
 import querysheet.google.GoogleAPI;
+import querysheet.utils.Fixtures;
 
 public class QuerySheetTest {
 
@@ -21,13 +21,13 @@ public class QuerySheetTest {
 	public void before() {
 		db = new DatabaseAPI();
 		google = new GoogleAPI();		
-		Person.createPersonTable(db);
-		Person.populatePeople(db);		
+		Fixtures.createPersonTable(db);
+		Fixtures.populatePeople(db);		
 	}
 
 	@After
 	public void after() {
-		Person.dropPersonTable(db);
+		Fixtures.dropPersonTable(db);
 		db.close();
 	}	
 	

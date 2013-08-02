@@ -6,8 +6,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import querysheet.utils.Setup;
 
@@ -48,21 +46,6 @@ public class DatabaseAPI implements Closeable {
 
 	public ResultSet resultSet() {
 		return rs;
-	}
-
-	public <T> List<T> map(ResultSetMapper<T> mapper, Class<T> clzz) {
-		try {
-
-			List<T> result = new ArrayList<T>();
-
-			while (rs.next()) {
-				result.add(mapper.map(rs));
-			}
-
-			return result;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	@Override

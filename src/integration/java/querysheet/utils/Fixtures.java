@@ -1,37 +1,9 @@
-package querysheet.db;
+package querysheet.utils;
 
-public class Person {
-	public static final int MAX_PERSON = 10;
-	
-	private int id;
-	
-	private String name;
-	
-	private int age;
+import querysheet.db.DatabaseAPI;
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
+public class Fixtures {
+	public static final int MAX_PERSON = 10;	
 	
 	public static void createPersonTable(DatabaseAPI db) {
 		try {
