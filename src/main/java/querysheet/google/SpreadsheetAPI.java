@@ -46,11 +46,16 @@ public class SpreadsheetAPI {
 
 		try {
 			String spreadsheetURL = "https://spreadsheets.google.com/feeds/spreadsheets/" + key;
-			spreadsheet = spreadsheetService.getEntry(new URL(spreadsheetURL), SpreadsheetEntry.class);
+			spreadsheet = spreadsheetService.getEntry(new URL(spreadsheetURL), SpreadsheetEntry.class);			
+			resetWorksheet();			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		return this;
+	}
+
+	private void resetWorksheet() {
+		worksheet = null;
 	}
 
 	public void setValue(int i, int j, String value) {

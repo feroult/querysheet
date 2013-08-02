@@ -3,7 +3,7 @@ package querysheet.utils;
 import querysheet.db.DatabaseAPI;
 
 public class Fixtures {
-	public static final int MAX_PERSON = 10;	
+	public static final int MAX_PERSON = 20;	
 	
 	public static void createPersonTable(DatabaseAPI db) {
 		try {
