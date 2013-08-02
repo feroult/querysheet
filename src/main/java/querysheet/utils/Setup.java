@@ -22,4 +22,8 @@ public class Setup {
 	public static String getPassword() {
 		return System.getenv("QS_PASSWORD");
 	}
+
+	public static String getSetupSpreadsheetKey() {
+		return System.getenv("QS_SETUP_SPREADSHEET_KEY");
+	}
 }

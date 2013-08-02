@@ -6,6 +6,7 @@ import java.util.Map;
 
 import querysheet.db.DatabaseAPI;
 import querysheet.google.GoogleAPI;
+import querysheet.utils.Setup;
 
 public class QuerySheet {
 
@@ -14,11 +15,16 @@ public class QuerySheet {
 	private DatabaseAPI db;
 
 	public static void main(String[] args) {
-		QuerySheet querysheet = new QuerySheet();
-		querysheet.process(args[0]);
+		String key = Setup.getSetupSpreadsheetKey();
+		
+		if(args.length != 0) {
+			key = args[0];
+		}
+		
+		new QuerySheet().process(key);
 	}
 
-	private void process(String key) {
+	public void process(String key) {
 		db = new DatabaseAPI();
 
 		try {

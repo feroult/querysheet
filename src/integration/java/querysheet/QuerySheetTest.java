@@ -64,7 +64,7 @@ public class QuerySheetTest {
 
 			google.spreadsheet(setupKey).worksheet("setup").batch(new MockTableBatch(setupTable));
 
-			QuerySheet.main(new String[] { setupKey });
+			new QuerySheet().process(setupKey);
 
 			List<Map<String, String>> records1 = google.spreadsheet(destKey1).worksheet("people").asMap();
 			assertSpreadsheetRecord(destKey1, records1, 0, "1", "Person - 1", "21");
