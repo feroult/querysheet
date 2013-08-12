@@ -196,7 +196,10 @@ public class SpreadsheetAPI {
 			return;
 		}
 
-		worksheet.setColCount(updateSet.cols());
+		if(worksheet.getColCount() < updateSet.cols()) {
+			worksheet.setColCount(updateSet.cols());
+		}		
+		
 		worksheet.setRowCount(updateSet.rows());
 
 		worksheet.update();
