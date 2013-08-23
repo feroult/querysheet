@@ -200,7 +200,9 @@ public class SpreadsheetAPI {
 			worksheet.setColCount(updateSet.cols());
 		}		
 		
-		worksheet.setRowCount(updateSet.rows());
+		if(worksheet.getRowCount() < updateSet.rows()) {
+			worksheet.setRowCount(updateSet.rows());
+		}
 
 		worksheet.update();
 	}
