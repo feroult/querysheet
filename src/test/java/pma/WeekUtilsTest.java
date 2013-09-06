@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -46,5 +47,21 @@ public class WeekUtilsTest {
 		assertEquals("13/09/2013", dateFormat.format(WeekUtils.adjustToFriday(dateFormat.parse("07/09/2013"))));
 		assertEquals("13/09/2013", dateFormat.format(WeekUtils.adjustToFriday(dateFormat.parse("08/09/2013"))));
 		assertEquals("13/09/2013", dateFormat.format(WeekUtils.adjustToFriday(dateFormat.parse("09/09/2013"))));
+	}
+
+	@Test
+	public void testGetWeeksSameWeek() throws ParseException {
+		List<Week> weeks = WeekUtils.getWeeks(dateFormat.parse("04/09/2013"), dateFormat.parse("05/09/2013"));
+		assertEquals(1, weeks.size());
+		assertEquals("02/09 - 06/09", weeks.get(0).getLabel());
+	}
+	
+	@Test
+	public void testGetWeeks() throws ParseException {
+		List<Week> weeks = WeekUtils.getWeeks(dateFormat.parse("04/09/2013"), dateFormat.parse("18/09/2013"));
+		assertEquals(3, weeks.size());
+		assertEquals("02/09 - 06/09", weeks.get(0).getLabel());
+		assertEquals("09/09 - 13/09", weeks.get(1).getLabel());
+		assertEquals("16/09 - 20/09", weeks.get(2).getLabel());
 	}
 }

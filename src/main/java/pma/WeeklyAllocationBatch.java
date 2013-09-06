@@ -44,15 +44,16 @@ public class WeeklyAllocationBatch implements SpreadsheetBatch {
 	}
 
 	private void addAllocation(String personId, Date start, Date end, Integer percentage) {
+		
+		
 		Map<String, Integer> weekAllocation = getWeekAllocation(start, end, percentage);
 	}
 
 	private Map<String, Integer> getWeekAllocation(Date start, Date end, Integer percentage) {
-		start = WeekUtils.adjustToMonday(start);
-		end = WeekUtils.adjustToFriday(end);
+		Date weekStart = WeekUtils.adjustToMonday(start);
+		Date weekEnd = WeekUtils.adjustToFriday(end);
 		
 
-		
 		
 		return null;
 	}
