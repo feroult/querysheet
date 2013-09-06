@@ -10,10 +10,7 @@ public class Week {
 	
 	private Date end;
 
-	public Week() {
-	}
-
-	public String getLabel() {
+	public String getWeekLabel() {
 		DateFormat dayMonthFormat = new SimpleDateFormat("dd/MM");		
 		
 		StringBuilder label = new StringBuilder();
@@ -39,6 +36,5 @@ public class Week {
 
 	public void setEnd(Date end) {
 		this.end = end;
-	}
-		
+	}		
 }
