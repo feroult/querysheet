@@ -3,7 +3,6 @@ package pma;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +16,7 @@ public class WeeklyAllocationBatch implements SpreadsheetBatch {
 	private static final String COLUMN_NAME_END = "data_inicio";
 	private static final String COLUMN_NAME_PERSON_ID = "id_colaborador";
 
-	private static final String HEADER_TEAM_MEMBER = "colaborador";
+	private static final String HEADER_PERSON = "colaborador";
 
 	private static final int FIRST_COLUMN = 1;
 	private static final int FIRST_ROW = 1;
@@ -82,7 +81,7 @@ public class WeeklyAllocationBatch implements SpreadsheetBatch {
 
 	private String getHeader(int j) {
 		if (j == FIRST_COLUMN) {
-			return HEADER_TEAM_MEMBER;
+			return HEADER_PERSON;
 		}
 		return weeks.get(j - 2);
 	}
