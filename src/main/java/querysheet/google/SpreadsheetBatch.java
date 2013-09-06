@@ -6,6 +6,7 @@ public interface SpreadsheetBatch {
 
 	public int cols();
 
+	// 1-based indexes
 	public String getValue(int i, int j);
 
 }

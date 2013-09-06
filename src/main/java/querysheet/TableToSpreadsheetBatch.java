@@ -11,7 +11,7 @@ import java.util.Locale;
 
 import querysheet.google.SpreadsheetBatch;
 
-public class TableToSpreadsheetBatch implements SpreadsheetBatch{
+public class TableToSpreadsheetBatch implements SpreadsheetBatch {
 	
 
 	public TableToSpreadsheetBatch(ResultSet rs) {
@@ -27,7 +27,7 @@ public class TableToSpreadsheetBatch implements SpreadsheetBatch{
 	
 	List<Object[]> rows = new ArrayList<Object[]>();
 	
-	public void addRow(Object[] row) {
+	private void addRow(Object[] row) {
 		if(cols == 0) {
 			cols = row.length; 
 		}
@@ -65,7 +65,7 @@ public class TableToSpreadsheetBatch implements SpreadsheetBatch{
 		return decimalFormat.format(value);
 	}
 
-	public void loadHeaders(ResultSet rs) throws SQLException {
+	private void loadHeaders(ResultSet rs) throws SQLException {
 		ResultSetMetaData metaData = rs.getMetaData();
 		Object[] cols = new Object[metaData.getColumnCount()];
 		
@@ -76,7 +76,7 @@ public class TableToSpreadsheetBatch implements SpreadsheetBatch{
 		addRow(cols);
 	}
 
-	public void loadRows(ResultSet rs) throws SQLException {
+	private void loadRows(ResultSet rs) throws SQLException {
 		ResultSetMetaData metaData = rs.getMetaData();
 		
 		while(rs.next()) {
