@@ -38,25 +38,25 @@ public class MockResultSet implements ResultSet {
 			strings.put(column, value);
 		}
 
-		public void addDate(String column, java.util.Date value) {			
+		public void addDate(String column, java.util.Date value) {
 			dates.put(column, new Date(value.getTime()));
 		}
 
 		public void addInt(String column, Integer value) {
 			ints.put(column, value);
 		}
-		
+
 		public String getString(String column) {
 			return strings.get(column);
-		}		
+		}
 
 		public Date getDate(String column) {
 			return dates.get(column);
-		}		
+		}
 
 		public Integer getInt(String column) {
 			return ints.get(column);
-		}		
+		}
 	}
 
 	private int currentGetRowIndex = -1;
@@ -81,7 +81,7 @@ public class MockResultSet implements ResultSet {
 	public void addInt(String column, Integer value) {
 		currentAddedRow.addInt(column, value);
 	}
-	
+
 	private Row getCurrentGetRow() {
 		return rows.get(currentGetRowIndex);
 	}
@@ -1097,5 +1097,4 @@ public class MockResultSet implements ResultSet {
 	public void updateNClob(String columnLabel, Reader reader) throws SQLException {
 
 	}
-
 }

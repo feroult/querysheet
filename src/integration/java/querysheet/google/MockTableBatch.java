@@ -14,8 +14,8 @@ public class MockTableBatch implements SpreadsheetBatch {
 	}
 
 	@Override
-	public String getValue(int i, int j) {
-		return table[i - 1][j - 1];
+	public String getValue(int row, int column) {
+		return table[row - 1][column - 1];
 	}
 
 	@Override

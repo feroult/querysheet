@@ -45,8 +45,8 @@ public class TableToSpreadsheetBatch implements SpreadsheetBatch {
 	}
 
 	@Override
-	public String getValue(int i, int j) {
-		Object value = rows.get(i-1)[j-1];
+	public String getValue(int row, int column) {
+		Object value = rows.get(row-1)[column-1];
 		return value == null ? "null" : formatString(value);
 	}
 

@@ -12,6 +12,8 @@ import querysheet.google.SpreadsheetBatch;
 
 public class AllocationWeekBatch implements SpreadsheetBatch {
 
+	private static final int WEEK_COLUMN_OFFSET = 2;
+	
 	protected static final String COLUMN_NAME_PERCENTAGE = "percentual";
 	protected static final String COLUMN_NAME_START = "data_fim";
 	protected static final String COLUMN_NAME_END = "data_inicio";
@@ -95,20 +97,20 @@ public class AllocationWeekBatch implements SpreadsheetBatch {
 	}
 
 	@Override
-	public String getValue(int i, int j) {
-		if (i == FIRST_ROW) {
-			return getHeader(j);
+	public String getValue(int row, int column) {
+		if (row == FIRST_ROW) {
+			return getHeader(column - WEEK_COLUMN_OFFSET);
 		}
 
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	private String getHeader(int j) {
-		if (j == FIRST_COLUMN) {
+	private String getHeader(int weekNumber) {
+		if (weekNumber == FIRST_COLUMN) {
 			return HEADER_PERSON;
 		}
-		return weeks.get(j - 2).getLabel();
+		return weeks.get(weekNumber).getLabel();
 	}
 
 }
