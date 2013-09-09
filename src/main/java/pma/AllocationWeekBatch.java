@@ -12,10 +12,10 @@ import querysheet.google.SpreadsheetBatch;
 
 public class AllocationWeekBatch implements SpreadsheetBatch {
 
-	private static final String COLUMN_NAME_PERCENTAGE = "percentual";
-	private static final String COLUMN_NAME_START = "data_fim";
-	private static final String COLUMN_NAME_END = "data_inicio";
-	private static final String COLUMN_NAME_PERSON_ID = "id_colaborador";
+	protected static final String COLUMN_NAME_PERCENTAGE = "percentual";
+	protected static final String COLUMN_NAME_START = "data_fim";
+	protected static final String COLUMN_NAME_END = "data_inicio";
+	protected static final String COLUMN_NAME_PERSON_ID = "id_colaborador";
 
 	private static final String HEADER_PERSON = "colaborador";
 
@@ -40,8 +40,8 @@ public class AllocationWeekBatch implements SpreadsheetBatch {
 	private void load(ResultSet rs) throws SQLException {
 		while (rs.next()) {
 			String personId = rs.getString(COLUMN_NAME_PERSON_ID);
-			Date start = rs.getDate(COLUMN_NAME_END);
-			Date end = rs.getDate(COLUMN_NAME_START);
+			Date start = rs.getDate(COLUMN_NAME_START);
+			Date end = rs.getDate(COLUMN_NAME_END);
 			Integer percentage = rs.getInt(COLUMN_NAME_PERCENTAGE);
 
 			addAllocation(personId, start, end, percentage);

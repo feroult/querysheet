@@ -34,11 +34,57 @@ public class MockResultSet implements ResultSet {
 
 		private Map<String, Integer> ints = new HashMap<String, Integer>();
 
+		public void addString(String column, String value) {
+			strings.put(column, value);
+		}
+
+		public void addDate(String column, java.util.Date value) {			
+			dates.put(column, new Date(value.getTime()));
+		}
+
+		public void addInt(String column, Integer value) {
+			ints.put(column, value);
+		}
+		
+		public String getString(String column) {
+			return strings.get(column);
+		}		
+
+		public Date getDate(String column) {
+			return dates.get(column);
+		}		
+
+		public Integer getInt(String column) {
+			return ints.get(column);
+		}		
 	}
 
-	private int currentRow = -1;
+	private int currentGetRowIndex = -1;
+
+	private Row currentAddedRow;
 
 	List<Row> rows = new ArrayList<Row>();
+
+	public void addRow() {
+		currentAddedRow = new Row();
+		rows.add(currentAddedRow);
+	}
+
+	public void addString(String column, String value) {
+		currentAddedRow.addString(column, value);
+	}
+
+	public void addDate(String column, java.util.Date value) {
+		currentAddedRow.addDate(column, value);
+	}
+
+	public void addInt(String column, Integer value) {
+		currentAddedRow.addInt(column, value);
+	}
+	
+	private Row getCurrentGetRow() {
+		return rows.get(currentGetRowIndex);
+	}
 
 	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
@@ -52,10 +98,10 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public boolean next() throws SQLException {
-		if (rows.size() <= currentRow + 1) {
+		if (rows.size() <= currentGetRowIndex + 1) {
 			return false;
 		}
-		currentRow++;
+		currentGetRowIndex++;
 		return true;
 	}
 
@@ -158,8 +204,7 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public String getString(String columnLabel) throws SQLException {
-
-		return null;
+		return getCurrentGetRow().getString(columnLabel);
 	}
 
 	@Override
@@ -182,13 +227,11 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public int getInt(String columnLabel) throws SQLException {
-
-		return 0;
+		return getCurrentGetRow().getInt(columnLabel);
 	}
 
 	@Override
 	public long getLong(String columnLabel) throws SQLException {
-
 		return 0;
 	}
 
@@ -218,8 +261,7 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public Date getDate(String columnLabel) throws SQLException {
-
-		return null;
+		return getCurrentGetRow().getDate(columnLabel);
 	}
 
 	@Override
