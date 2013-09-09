@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,12 @@ public class AllocationWeekBatch implements SpreadsheetBatch {
 	private static final int FIRST_COLUMN = 1;
 	private static final int FIRST_ROW = 1;
 
-	private List<AllocationWeek> weeks = new ArrayList<AllocationWeek>();
+	private List<AllocationWeek> weeks;
+
+	private Map<String, Map<Date, List<AllocationWeek>>> allocation = new HashMap<String, Map<Date, List<AllocationWeek>>>();
+
+	private Date firstStart;
+	private Date lastEnd;
 
 	public AllocationWeekBatch(ResultSet rs) {
 		try {
@@ -40,21 +46,42 @@ public class AllocationWeekBatch implements SpreadsheetBatch {
 
 			addAllocation(personId, start, end, percentage);
 		}
+		
+		weeks = AllocationWeek.getWeeks(firstStart, lastEnd, 0);
 	}
 
 	private void addAllocation(String personId, Date start, Date end, int percentage) {
-		
-		List<AllocationWeek> weeks = AllocationWeek.getWeeks(start, end, percentage);
-		
-		addWeeks(weeks);
-		
+		checkAndSetFirstAndLastDates(start, end);
+		mergePersonAllocation(personId, AllocationWeek.getWeeks(start, end, percentage));				
 	}
 
-	private void addWeeks(List<AllocationWeek> weeks) {
-		
-		
+	private void mergePersonAllocation(String personId, List<AllocationWeek> weeks) {
+		if (!allocation.containsKey(personId)) {
+			allocation.put(personId, new HashMap<Date, List<AllocationWeek>>());
+		}
+
+		Map<Date, List<AllocationWeek>> personAllocation = allocation.get(personId);
+
+		for (AllocationWeek week : weeks) {			
+			if(!personAllocation.containsKey(week.getWeekStart())) {
+				personAllocation.put(week.getWeekStart(), new ArrayList<AllocationWeek>());
+			}
+			
+			List<AllocationWeek> weekAllocation = personAllocation.get(week.getWeekStart());
+			weekAllocation.add(week);
+		}
 	}
 
+	private void checkAndSetFirstAndLastDates(Date start, Date end) {
+		if (firstStart == null || start.before(firstStart)) {
+			firstStart = start;
+		}
+
+		if (lastEnd == null || end.after(lastEnd)) {
+			lastEnd = end;
+		}
+	}
+	
 	@Override
 	public int rows() {
 		// TODO Auto-generated method stub
