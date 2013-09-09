@@ -40,18 +40,18 @@ public class AllocationWeekTest {
 
 	@Test
 	public void testGetOneAllocationWeek() throws ParseException {
-		List<AllocationWeek> weeks = AllocationWeek.getWeeks(dateFormat.parse("04/09/2013"), dateFormat.parse("05/09/2013"));
+		List<AllocationWeek> weeks = AllocationWeek.getWeeks(dateFormat.parse("04/09/2013"), dateFormat.parse("05/09/2013"), 100);
 		assertEquals(1, weeks.size());
-		assertEquals("02/09 - 06/09", weeks.get(0).getWeekLabel());
+		assertEquals("02/09 - 06/09", weeks.get(0).getLabel());
 	}
 	
 	@Test
 	public void testGetVariousAllocationWeeks() throws ParseException {
-		List<AllocationWeek> weeks = AllocationWeek.getWeeks(dateFormat.parse("04/09/2013"), dateFormat.parse("18/09/2013"));
+		List<AllocationWeek> weeks = AllocationWeek.getWeeks(dateFormat.parse("04/09/2013"), dateFormat.parse("18/09/2013"), 100);
 		assertEquals(3, weeks.size());
-		assertEquals("02/09 - 06/09", weeks.get(0).getWeekLabel());
-		assertEquals("09/09 - 13/09", weeks.get(1).getWeekLabel());
-		assertEquals("16/09 - 20/09", weeks.get(2).getWeekLabel());
+		assertEquals("02/09 - 06/09", weeks.get(0).getLabel());
+		assertEquals("09/09 - 13/09", weeks.get(1).getLabel());
+		assertEquals("16/09 - 20/09", weeks.get(2).getLabel());
 		
 		assertEquals("02/09/2013", dateFormat.format(weeks.get(0).getWeekStart()));
 		assertEquals("04/09/2013", dateFormat.format(weeks.get(0).getAllocationStart()));
@@ -65,8 +65,8 @@ public class AllocationWeekTest {
 	
 	@Test
 	public void testEquals() throws ParseException {		
-		AllocationWeek week1 = new AllocationWeek(dateFormat.parse("02/09/2013"), dateFormat.parse("06/09/2013"));
-		AllocationWeek week2 = new AllocationWeek(dateFormat.parse("02/09/2013"), dateFormat.parse("06/09/2013"));
+		AllocationWeek week1 = new AllocationWeek(dateFormat.parse("02/09/2013"), dateFormat.parse("06/09/2013"), 100);
+		AllocationWeek week2 = new AllocationWeek(dateFormat.parse("02/09/2013"), dateFormat.parse("06/09/2013"), 100);
 		
 		assertTrue(week1.equals(week2));
 	}

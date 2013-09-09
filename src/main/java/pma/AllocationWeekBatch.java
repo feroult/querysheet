@@ -9,7 +9,7 @@ import java.util.Map;
 
 import querysheet.google.SpreadsheetBatch;
 
-public class WeeklyAllocationBatch implements SpreadsheetBatch {
+public class AllocationWeekBatch implements SpreadsheetBatch {
 
 	private static final String COLUMN_NAME_PERCENTAGE = "percentual";
 	private static final String COLUMN_NAME_START = "data_fim";
@@ -21,9 +21,9 @@ public class WeeklyAllocationBatch implements SpreadsheetBatch {
 	private static final int FIRST_COLUMN = 1;
 	private static final int FIRST_ROW = 1;
 
-	private List<String> weeks = new ArrayList<String>();
+	private List<AllocationWeek> weeks = new ArrayList<AllocationWeek>();
 
-	public WeeklyAllocationBatch(ResultSet rs) {
+	public AllocationWeekBatch(ResultSet rs) {
 		try {
 			load(rs);
 		} catch (SQLException e) {
@@ -42,17 +42,17 @@ public class WeeklyAllocationBatch implements SpreadsheetBatch {
 		}
 	}
 
-	private void addAllocation(String personId, Date start, Date end, Integer percentage) {
+	private void addAllocation(String personId, Date start, Date end, int percentage) {
 		
+		List<AllocationWeek> weeks = AllocationWeek.getWeeks(start, end, percentage);
 		
-		Map<String, Integer> weekAllocation = getWeekAllocation(start, end, percentage);
+		addWeeks(weeks);
+		
 	}
 
-	private Map<String, Integer> getWeekAllocation(Date start, Date end, Integer percentage) {
+	private void addWeeks(List<AllocationWeek> weeks) {
 		
-
 		
-		return null;
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class WeeklyAllocationBatch implements SpreadsheetBatch {
 		if (j == FIRST_COLUMN) {
 			return HEADER_PERSON;
 		}
-		return weeks.get(j - 2);
+		return weeks.get(j - 2).getLabel();
 	}
 
 }

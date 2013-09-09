@@ -8,7 +8,7 @@ public class WeeklyAllocationBatchTest {
 
 	@Test
 	public void testHeader() {		
-		WeeklyAllocationBatch batch = new WeeklyAllocationBatch(null);		
+		AllocationWeekBatch batch = new AllocationWeekBatch(null);		
 		
 		assertEquals("colaborador", batch.getValue(1, 1));
 		assertEquals("02/09 - 06/09", batch.getValue(1, 3));

@@ -17,16 +17,15 @@ public class AllocationWeek {
 
 	private Date allocationEnd;
 
-	public AllocationWeek(Date start, Date end) {
+	private int percentage;
+
+	public AllocationWeek(Date start, Date end, int percentage) {
 		this.weekStart = start;
 		this.weekEnd = end;
+		this.percentage = percentage;
 	}
 
-	public AllocationWeek() {
-		
-	}
-
-	public String getWeekLabel() {
+	public String getLabel() {
 		DateFormat dayMonthFormat = new SimpleDateFormat("dd/MM");		
 		
 		StringBuilder label = new StringBuilder();
@@ -42,18 +41,9 @@ public class AllocationWeek {
 		return weekStart;
 	}
 
-	public void setWeekStart(Date start) {
-		this.weekStart = start;
-	}
-
 	public Date getWeekEnd() {
 		return weekEnd;
 	}
-
-	public void setWeekEnd(Date end) {
-		this.weekEnd = end;
-	}
-
 	public void setAllocationStart(Date allocationStart) {
 		this.allocationStart = allocationStart;
 	}
@@ -68,6 +58,10 @@ public class AllocationWeek {
 
 	public Date getAllocationEnd() {
 		return allocationEnd == null ? weekEnd : allocationEnd;
+	}
+	
+	public int getPercentage() {
+		return percentage;
 	}
 
 	@Override
@@ -139,7 +133,7 @@ public class AllocationWeek {
 		return calendar.getTime();
 	}
 
-	public static List<AllocationWeek> getWeeks(Date start, Date end) {
+	public static List<AllocationWeek> getWeeks(Date start, Date end, int percentage) {
 		Calendar calendar = Calendar.getInstance();
 
 		List<AllocationWeek> weeks = new ArrayList<AllocationWeek>();
@@ -148,7 +142,7 @@ public class AllocationWeek {
 		Date weekFriday = adjustToFriday(start);
 
 		while (weekMonday.before(end)) {
-			AllocationWeek week = new AllocationWeek(weekMonday, weekFriday);
+			AllocationWeek week = new AllocationWeek(weekMonday, weekFriday, 100);
 
 			if (weekMonday.before(start)) {
 				week.setAllocationStart(start);
