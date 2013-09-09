@@ -45,28 +45,24 @@ public class WeekUtils {
 		return calendar.getTime();
 	}
 
-	public static List<Week> getWeeks(Date start, Date end) {
+	public static List<AllocationWeek> getAllocationWeeks(Date start, Date end) {
 		Calendar calendar = Calendar.getInstance();
 
-		List<Week> weeks = new ArrayList<Week>();
+		List<AllocationWeek> weeks = new ArrayList<AllocationWeek>();
 
 		Date weekMonday = adjustToMonday(start);
 		Date weekFriday = adjustToFriday(start);
 
 		while (weekMonday.before(end)) {
-			Week week = new Week();
+			AllocationWeek week = new AllocationWeek(weekMonday, weekFriday);
 
 			if (weekMonday.before(start)) {
-				week.setStart(start);
-			} else {
-				week.setStart(weekMonday);
-			}
-
+				week.setAllocationStart(start);
+			} 
+			
 			if (weekFriday.after(end)) {
-				week.setEnd(end);
-			} else {
-				week.setEnd(weekFriday);
-			}
+				week.setAllocationEnd(end);
+			} 
 
 			weeks.add(week);
 
