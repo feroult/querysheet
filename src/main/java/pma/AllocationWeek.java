@@ -64,6 +64,30 @@ public class AllocationWeek {
 		return percentage;
 	}
 
+	public int getAllocation() {
+		int daysWithoutAllocation = calculateStartDelay() + calculateEndAdvance();				
+		return (int)(percentage * 0.2 * (5 - daysWithoutAllocation));
+	}
+
+	private int calculateStartDelay() {
+		int startDelay = offsetToMonday(getAllocationStart());
+		if(startDelay > 0) {
+			startDelay = 0;
+		} else {
+			startDelay *= -1;
+		}
+		return startDelay;
+	}	
+		
+	private int calculateEndAdvance() {
+		int endAdvance = offsetToFriday(getAllocationEnd());
+		if(endAdvance < 0) {
+			endAdvance = 0;
+		} 
+		return endAdvance;
+	}	
+			
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -95,7 +119,11 @@ public class AllocationWeek {
 		return true;
 	}	
 	
-	private static int adjustDayOfWeekToMonday(int dayOfWeek) {
+	private static int offsetToMonday(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+		
 		switch (dayOfWeek) {
 		case Calendar.SUNDAY:
 			return 1;
@@ -109,17 +137,20 @@ public class AllocationWeek {
 	protected static Date adjustToMonday(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
-		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-		calendar.add(Calendar.DATE, adjustDayOfWeekToMonday(dayOfWeek));
+		calendar.add(Calendar.DATE, offsetToMonday(date));
 		return calendar.getTime();
 	}
 
-	private static int adjustDayOfWeekToFriday(int dayOfWeek) {
+	private static int offsetToFriday(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);		
+		
 		switch (dayOfWeek) {
 		case Calendar.SUNDAY:
-			return 5;
+			return -2;
 		case Calendar.SATURDAY:
-			return 6;
+			return -1;
 		default:
 			return Calendar.FRIDAY - dayOfWeek;
 		}
@@ -128,8 +159,7 @@ public class AllocationWeek {
 	protected static Date adjustToFriday(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
-		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-		calendar.add(Calendar.DATE, adjustDayOfWeekToFriday(dayOfWeek));
+		calendar.add(Calendar.DATE, offsetToFriday(date));
 		return calendar.getTime();
 	}
 
@@ -166,5 +196,6 @@ public class AllocationWeek {
 		calendar.add(Calendar.DATE, 7);
 		weekMonday = calendar.getTime();
 		return weekMonday;
-	}	
+	}
+
 }

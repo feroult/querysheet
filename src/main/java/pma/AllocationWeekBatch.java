@@ -3,6 +3,7 @@ package pma;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,12 +13,14 @@ import querysheet.google.SpreadsheetBatch;
 
 public class AllocationWeekBatch implements SpreadsheetBatch {
 
-	private static final int WEEK_COLUMN_OFFSET = 2;
-	
+	private static final int ROW_OFFSET = 2;
+
+	private static final int COLUMN_OFFSET = 2;
+
 	protected static final String COLUMN_NAME_PERCENTAGE = "percentual";
 	protected static final String COLUMN_NAME_START = "data_fim";
 	protected static final String COLUMN_NAME_END = "data_inicio";
-	protected static final String COLUMN_NAME_PERSON_ID = "id_colaborador";
+	protected static final String COLUMN_NAME_PERSON = "id_colaborador";
 
 	private static final String HEADER_PERSON = "colaborador";
 
@@ -25,6 +28,8 @@ public class AllocationWeekBatch implements SpreadsheetBatch {
 	private static final int FIRST_ROW = 1;
 
 	private List<AllocationWeek> weeks;
+
+	private List<String> persons = new ArrayList<String>();
 
 	private Map<String, Map<Date, List<AllocationWeek>>> allocation = new HashMap<String, Map<Date, List<AllocationWeek>>>();
 
@@ -41,36 +46,41 @@ public class AllocationWeekBatch implements SpreadsheetBatch {
 
 	private void load(ResultSet rs) throws SQLException {
 		while (rs.next()) {
-			String personId = rs.getString(COLUMN_NAME_PERSON_ID);
+			String person = rs.getString(COLUMN_NAME_PERSON);
 			Date start = rs.getDate(COLUMN_NAME_START);
 			Date end = rs.getDate(COLUMN_NAME_END);
 			Integer percentage = rs.getInt(COLUMN_NAME_PERCENTAGE);
 
-			addAllocation(personId, start, end, percentage);
+			addAllocation(person, start, end, percentage);
 		}
-		
+
 		weeks = AllocationWeek.getWeeks(firstStart, lastEnd, 0);
+		Collections.sort(persons);
 	}
 
-	private void addAllocation(String personId, Date start, Date end, int percentage) {
+	private void addAllocation(String person, Date start, Date end, int percentage) {
 		checkAndSetFirstAndLastDates(start, end);
-		mergePersonAllocation(personId, AllocationWeek.getWeeks(start, end, percentage));				
+		mergePersonAllocation(person, AllocationWeek.getWeeks(start, end, percentage));
 	}
 
-	private void mergePersonAllocation(String personId, List<AllocationWeek> weeks) {
-		if (!allocation.containsKey(personId)) {
-			allocation.put(personId, new HashMap<Date, List<AllocationWeek>>());
+	private void mergePersonAllocation(String person, List<AllocationWeek> weeks) {
+		if (!allocation.containsKey(person)) {
+			allocation.put(person, new HashMap<Date, List<AllocationWeek>>());
 		}
 
-		Map<Date, List<AllocationWeek>> personAllocation = allocation.get(personId);
+		Map<Date, List<AllocationWeek>> personAllocation = allocation.get(person);
 
-		for (AllocationWeek week : weeks) {			
-			if(!personAllocation.containsKey(week.getWeekStart())) {
+		for (AllocationWeek week : weeks) {
+			if (!personAllocation.containsKey(week.getWeekStart())) {
 				personAllocation.put(week.getWeekStart(), new ArrayList<AllocationWeek>());
 			}
-			
+
 			List<AllocationWeek> weekAllocation = personAllocation.get(week.getWeekStart());
 			weekAllocation.add(week);
+		}
+
+		if (!persons.contains(person)) {
+			persons.add(person);
 		}
 	}
 
@@ -83,17 +93,16 @@ public class AllocationWeekBatch implements SpreadsheetBatch {
 			lastEnd = end;
 		}
 	}
-	
+
 	@Override
 	public int rows() {
 		// TODO Auto-generated method stub
-		return 0;
+		return persons.size() + 1;
 	}
 
 	@Override
 	public int cols() {
-		// TODO Auto-generated method stub
-		return 0;
+		return weeks.size() + 1;
 	}
 
 	@Override
@@ -101,16 +110,45 @@ public class AllocationWeekBatch implements SpreadsheetBatch {
 		if (row == FIRST_ROW) {
 			return getHeader(column);
 		}
+		
+		return getValueInTable(row, column);
+	}
 
-		// TODO Auto-generated method stub
-		return null;
+	private String getValueInTable(int row, int column) {
+		String person = persons.get(row - ROW_OFFSET);
+		
+		if(column == FIRST_COLUMN) {
+			return person;
+		}
+
+		Integer totalAllocation = getAllocation(person, weeks.get(column - COLUMN_OFFSET).getWeekStart());
+		return totalAllocation.toString();
+	}
+
+	private Integer getAllocation(String person, Date date) {
+			
+		Map<Date, List<AllocationWeek>> personAllocation = allocation.get(person);
+		
+		if(!personAllocation.containsKey(date)) {
+			return 0;
+		}
+		
+		List<AllocationWeek> weeks = personAllocation.get(date);
+		
+		int total = 0;
+		
+		for(AllocationWeek week : weeks) {
+			total += week.getAllocation();
+		}
+		
+		return total;
 	}
 
 	private String getHeader(int column) {
 		if (column == FIRST_COLUMN) {
 			return HEADER_PERSON;
 		}
-		return weeks.get(column - WEEK_COLUMN_OFFSET).getLabel();
+		return weeks.get(column - COLUMN_OFFSET).getLabel();
 	}
 
 }

@@ -70,4 +70,13 @@ public class AllocationWeekTest {
 		
 		assertTrue(week1.equals(week2));
 	}
+	
+	@Test
+	public void testAllocation() throws ParseException {		
+		assertEquals(100, new AllocationWeek(dateFormat.parse("02/09/2013"), dateFormat.parse("06/09/2013"), 100).getAllocation());
+		assertEquals(50, new AllocationWeek(dateFormat.parse("02/09/2013"), dateFormat.parse("06/09/2013"), 50).getAllocation());		
+		assertEquals(60, new AllocationWeek(dateFormat.parse("04/09/2013"), dateFormat.parse("06/09/2013"), 100).getAllocation());
+		assertEquals(30, new AllocationWeek(dateFormat.parse("04/09/2013"), dateFormat.parse("06/09/2013"), 50).getAllocation());		
+		assertEquals(20, new AllocationWeek(dateFormat.parse("06/09/2013"), dateFormat.parse("06/09/2013"), 100).getAllocation());
+	}
 }
