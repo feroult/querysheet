@@ -33,8 +33,8 @@ public class AllocationWeekTest {
 		assertEquals("06/09/2013", dateFormat.format(AllocationWeek.adjustToFriday(dateFormat.parse("04/09/2013"))));
 		assertEquals("06/09/2013", dateFormat.format(AllocationWeek.adjustToFriday(dateFormat.parse("05/09/2013"))));
 		assertEquals("06/09/2013", dateFormat.format(AllocationWeek.adjustToFriday(dateFormat.parse("06/09/2013"))));
-		assertEquals("13/09/2013", dateFormat.format(AllocationWeek.adjustToFriday(dateFormat.parse("07/09/2013"))));
-		assertEquals("13/09/2013", dateFormat.format(AllocationWeek.adjustToFriday(dateFormat.parse("08/09/2013"))));
+		assertEquals("06/09/2013", dateFormat.format(AllocationWeek.adjustToFriday(dateFormat.parse("07/09/2013"))));
+		assertEquals("06/09/2013", dateFormat.format(AllocationWeek.adjustToFriday(dateFormat.parse("08/09/2013"))));
 		assertEquals("13/09/2013", dateFormat.format(AllocationWeek.adjustToFriday(dateFormat.parse("09/09/2013"))));
 	}
 
