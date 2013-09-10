@@ -14,6 +14,7 @@ import org.junit.Test;
 import querysheet.db.DatabaseAPI;
 import querysheet.google.GoogleAPI;
 import querysheet.google.MockTableBatch;
+import querysheet.google.ResultSetToSpreadsheetBatch;
 import querysheet.utils.Fixtures;
 
 public class QuerySheetTest {
@@ -40,15 +41,16 @@ public class QuerySheetTest {
 	public void testLoadPeopleSpreadsheet() throws SQLException {
 		String key = google.drive().createSpreadsheet();
 
-		TableToSpreadsheetBatch table = loadSpreadsheetTable();
+		ResultSetToSpreadsheetBatch table = loadSpreadsheetTable();
 		google.spreadsheet(key).worksheet("people").batch(table);
 
 		google.drive().delete(key);
 	}
 
-	private TableToSpreadsheetBatch loadSpreadsheetTable() throws SQLException {
-		ResultSet rs = db.query("select id, name, age from people").resultSet();
-		return new TableToSpreadsheetBatch(rs);
+	private ResultSetToSpreadsheetBatch loadSpreadsheetTable() throws SQLException {
+		TableToSpreadsheetBatch batch = new TableToSpreadsheetBatch();
+		batch.load(db.query("select id, name, age from people").resultSet());
+		return batch;
 	}
 
 	@Test
@@ -81,6 +83,30 @@ public class QuerySheetTest {
 		}
 	}
 
+	
+	@Test
+	public void testSimpleTransformer() {
+		String setupKey = google.drive().createSpreadsheet();
+		String destKey = google.drive().createSpreadsheet();
+
+		try {
+			String[][] setupTable = new String[][] { { "query", "spreadsheet", "worksheet", "converter" },
+					{ "select id, name, age from people where age < 31 order by id", destKey, "people", "querysheet.SimpleConverter" }};					;
+
+			google.spreadsheet(setupKey).worksheet("setup").batch(new MockTableBatch(setupTable));
+					
+			new QuerySheet().process(setupKey);
+
+			List<Map<String, String>> records = google.spreadsheet(destKey).worksheet("people").asMap();
+			assertSpreadsheetRecord(destKey, records, 0, "1", "A Thousand Year Old Person - 1", "1021");
+			assertSpreadsheetRecord(destKey, records, 1, "2", "A Thousand Year Old Converted Person - 2", "1022");			
+			
+		} finally {
+			google.drive().delete(setupKey);
+			google.drive().delete(destKey);
+		}
+	}
+	
 	private void assertSpreadsheetRecord(String destKey1, List<Map<String, String>> records, int row, String id,
 			String name, String age) {
 		Map<String, String> record = records.get(row);
