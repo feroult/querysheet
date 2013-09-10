@@ -41,6 +41,11 @@ public class AllocationWeek {
 		return weekStart;
 	}
 
+	public String getKey() {
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		return dateFormat.format(weekStart);
+	}
+	
 	public Date getWeekEnd() {
 		return weekEnd;
 	}
