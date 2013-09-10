@@ -2,7 +2,6 @@ package querysheet;
 
 import static org.junit.Assert.assertEquals;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,7 @@ import org.junit.Test;
 import querysheet.db.DatabaseAPI;
 import querysheet.google.GoogleAPI;
 import querysheet.google.MockTableBatch;
-import querysheet.google.ResultSetToSpreadsheetBatch;
+import querysheet.google.SpreadsheetBatch;
 import querysheet.utils.Fixtures;
 
 public class QuerySheetTest {
@@ -41,15 +40,14 @@ public class QuerySheetTest {
 	public void testLoadPeopleSpreadsheet() throws SQLException {
 		String key = google.drive().createSpreadsheet();
 
-		ResultSetToSpreadsheetBatch table = loadSpreadsheetTable();
+		SpreadsheetBatch table = loadSpreadsheetTable();
 		google.spreadsheet(key).worksheet("people").batch(table);
 
 		google.drive().delete(key);
 	}
 
-	private ResultSetToSpreadsheetBatch loadSpreadsheetTable() throws SQLException {
-		TableToSpreadsheetBatch batch = new TableToSpreadsheetBatch();
-		batch.load(db.query("select id, name, age from people").resultSet());
+	private SpreadsheetBatch loadSpreadsheetTable() throws SQLException {
+		TableToSpreadsheetBatch batch = new TableToSpreadsheetBatch(db.query("select id, name, age from people").resultSet());
 		return batch;
 	}
 
