@@ -1,6 +1,5 @@
 package querysheet;
 
-import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +41,7 @@ public class QuerySheet {
 			List<Map<String, String>> queries = google.spreadsheet(key).worksheet("setup").asMap();
 
 			for (Map<String, String> querySetup : queries) {
-				time += processQuery(querySetup.get("query"), querySetup.get("spreadsheet"), querySetup.get("worksheet"));
+				time += processQuery(querySetup.get("query"), querySetup.get("spreadsheet"), querySetup.get("worksheet"), querySetup.get("batch"));
 			}
 			
 			logger.info(String.format("total=%d ms", time));
@@ -52,9 +51,9 @@ public class QuerySheet {
 		}
 	}
 
-	private long processQuery(String query, String key, String worksheet) {
+	private long processQuery(String query, String key, String worksheet, String batchClass) {
 		long time = System.currentTimeMillis();
-		google.spreadsheet(key).worksheet(worksheet).batch(createBatch(query));
+		google.spreadsheet(key).worksheet(worksheet).batch(createBatch(query, batchClass));
 		time = System.currentTimeMillis() - time;
 
 		logger.info(String.format("elapsed=%d ms, query=%s, spreadsheet=%s, worksheet=%s", time, truncate(query), key, worksheet));
@@ -69,9 +68,22 @@ public class QuerySheet {
 		return s;
 	}
 
-	private TableToSpreadsheetBatch createBatch(String query) {
-		ResultSet rs = db.query(query).resultSet();
-		return new TableToSpreadsheetBatch(rs);
+	private ResultSetToSpreadsheetBatch createBatch(String query, String batchClass) {
+		ResultSetToSpreadsheetBatch batch = createBatchInstance(batchClass);		
+		batch.load(db.query(query).resultSet());
+		return batch;
+	}
+
+	private ResultSetToSpreadsheetBatch createBatchInstance(String batchClass) {
+		if(batchClass == null || batchClass.equals("")) {
+			return new TableToSpreadsheetBatch();
+		}
+		
+		try {
+			return (ResultSetToSpreadsheetBatch) Class.forName(batchClass).newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

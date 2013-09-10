@@ -9,12 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import querysheet.google.SpreadsheetBatch;
+public class TableToSpreadsheetBatch implements ResultSetToSpreadsheetBatch {	
 
-public class TableToSpreadsheetBatch implements SpreadsheetBatch {
-	
-
-	public TableToSpreadsheetBatch(ResultSet rs) {
+	public void load(ResultSet rs) {
 		try {
 			loadHeaders(rs);
 			loadRows(rs);

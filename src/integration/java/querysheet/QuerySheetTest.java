@@ -47,7 +47,8 @@ public class QuerySheetTest {
 	}
 
 	private SpreadsheetBatch loadSpreadsheetTable() throws SQLException {
-		TableToSpreadsheetBatch batch = new TableToSpreadsheetBatch(db.query("select id, name, age from people").resultSet());
+		TableToSpreadsheetBatch batch = new TableToSpreadsheetBatch();
+		batch.load(db.query("select id, name, age from people").resultSet());
 		return batch;
 	}
 
@@ -88,16 +89,16 @@ public class QuerySheetTest {
 		String destKey = google.drive().createSpreadsheet();
 
 		try {
-			String[][] setupTable = new String[][] { { "query", "spreadsheet", "worksheet", "converter" },
-					{ "select id, name, age from people where age < 31 order by id", destKey, "people", "querysheet.SimpleConverter" }};					;
+			String[][] setupTable = new String[][] { { "query", "spreadsheet", "worksheet", "batch" },
+					{ "select id, name, age from people where age < 31 order by id", destKey, "people", "querysheet.ThousandYearBatch" }};
 
 			google.spreadsheet(setupKey).worksheet("setup").batch(new MockTableBatch(setupTable));
 					
 			new QuerySheet().process(setupKey);
 
 			List<Map<String, String>> records = google.spreadsheet(destKey).worksheet("people").asMap();
-			assertSpreadsheetRecord(destKey, records, 0, "1", "A Thousand Year Old Person - 1", "1021");
-			assertSpreadsheetRecord(destKey, records, 1, "2", "A Thousand Year Old Converted Person - 2", "1022");			
+			assertSpreadsheetRecord(destKey, records, 0, "1", "Person - 1", "1021");
+			assertSpreadsheetRecord(destKey, records, 1, "2", "Person - 2", "1022");			
 			
 		} finally {
 			google.drive().delete(setupKey);
