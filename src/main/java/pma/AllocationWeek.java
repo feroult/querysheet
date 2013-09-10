@@ -172,7 +172,7 @@ public class AllocationWeek {
 		Date weekFriday = adjustToFriday(start);
 
 		while (weekMonday.before(end)) {
-			AllocationWeek week = new AllocationWeek(weekMonday, weekFriday, 100);
+			AllocationWeek week = new AllocationWeek(weekMonday, weekFriday, percentage);
 
 			if (weekMonday.before(start)) {
 				week.setAllocationStart(start);

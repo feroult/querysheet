@@ -3,24 +3,27 @@ package pma;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import querysheet.google.SpreadsheetBatch;
+import querysheet.ResultSetToSpreadsheetBatch;
 
-public class AllocationWeekBatch implements SpreadsheetBatch {
+public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
+
+	private static final int MAX_ALLOCATION_MONTHS = 2;
 
 	private static final int ROW_OFFSET = 2;
 
 	private static final int COLUMN_OFFSET = 2;
 
 	protected static final String COLUMN_NAME_PERCENTAGE = "percentual";
-	protected static final String COLUMN_NAME_START = "data_fim";
-	protected static final String COLUMN_NAME_END = "data_inicio";
-	protected static final String COLUMN_NAME_PERSON = "id_colaborador";
+	protected static final String COLUMN_NAME_START = "data_inicio";
+	protected static final String COLUMN_NAME_END = "data_fim";
+	protected static final String COLUMN_NAME_PERSON = "colaborador";
 
 	private static final String HEADER_PERSON = "colaborador";
 
@@ -36,26 +39,69 @@ public class AllocationWeekBatch implements SpreadsheetBatch {
 	private Date firstStart;
 	private Date lastEnd;
 
-	public AllocationWeekBatch(ResultSet rs) {
+	public void load(ResultSet rs)  {
 		try {
-			load(rs);
+			while (rs.next()) {				
+				Date start = adjustStart(rs.getDate(COLUMN_NAME_START));
+
+				if(!validStart(start)) { 
+					continue;
+				}
+				
+				Date end = adjustEnd(rs.getDate(COLUMN_NAME_END));
+				Integer percentage = rs.getInt(COLUMN_NAME_PERCENTAGE);	
+				String person = rs.getString(COLUMN_NAME_PERSON);
+				
+				addAllocation(person, start, end, percentage);
+			}
+	
+			weeks = AllocationWeek.getWeeks(firstStart, lastEnd, 0);
+			Collections.sort(persons);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
-		}
+		}			
 	}
 
-	private void load(ResultSet rs) throws SQLException {
-		while (rs.next()) {
-			String person = rs.getString(COLUMN_NAME_PERSON);
-			Date start = rs.getDate(COLUMN_NAME_START);
-			Date end = rs.getDate(COLUMN_NAME_END);
-			Integer percentage = rs.getInt(COLUMN_NAME_PERCENTAGE);
-
-			addAllocation(person, start, end, percentage);
+	protected boolean validStart(Date date) {
+		Calendar calendar = Calendar.getInstance();		
+		calendar.setTime(today());		
+		calendar.add(Calendar.MONTH, MAX_ALLOCATION_MONTHS);
+		
+		if(date.after(calendar.getTime())) {
+			return false;
 		}
+		
+		return true;
+	}
 
-		weeks = AllocationWeek.getWeeks(firstStart, lastEnd, 0);
-		Collections.sort(persons);
+	protected Date adjustEnd(Date date) {
+		Calendar calendar = Calendar.getInstance();		
+		calendar.setTime(today());		
+		calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+		calendar.add(Calendar.MONTH, 3);
+				
+		if(date.after(calendar.getTime())) {
+			return calendar.getTime();
+		}
+		
+		return date;
+	}
+
+	protected Date adjustStart(Date date) {					
+		Calendar calendar = Calendar.getInstance();		
+		calendar.setTime(today());		
+		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		calendar.add(Calendar.DAY_OF_MONTH, -14);
+				
+		if(date.before(calendar.getTime())) {
+			return calendar.getTime();
+		}
+		
+		return date;
+	}
+	
+	protected Date today() {
+		return new Date();
 	}
 
 	private void addAllocation(String person, Date start, Date end, int percentage) {

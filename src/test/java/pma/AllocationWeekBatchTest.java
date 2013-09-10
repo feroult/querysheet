@@ -1,6 +1,8 @@
 package pma;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -9,9 +11,23 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import com.sun.org.apache.bcel.internal.generic.ALOAD;
+
 public class AllocationWeekBatchTest {
 
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+	
+	public class AllocationWeekBatchMock extends AllocationWeekBatch {
+
+		@Override
+		protected Date today() {
+			try {
+				return dateFormat.parse("10/09/2013");
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}		
+	}
 
 	public class AllocationMockResultSet extends MockResultSet {
 		public AllocationMockResultSet() throws ParseException {
@@ -32,7 +48,8 @@ public class AllocationWeekBatchTest {
 	
 	@Test
 	public void testHeader() throws ParseException {
-		AllocationWeekBatch batch = new AllocationWeekBatch(new AllocationMockResultSet());
+		AllocationWeekBatch batch = new AllocationWeekBatchMock();
+		batch.load(new AllocationMockResultSet());
 
 		assertEquals("colaborador", batch.getValue(1, 1));
 		assertEquals("02/09 - 06/09", batch.getValue(1, 2));
@@ -45,7 +62,8 @@ public class AllocationWeekBatchTest {
 
 	@Test
 	public void testAllocation() throws ParseException {
-		AllocationWeekBatch batch = new AllocationWeekBatch(new AllocationMockResultSet());
+		AllocationWeekBatch batch = new AllocationWeekBatchMock();
+		batch.load(new AllocationMockResultSet());
 
 		assertEquals(3, batch.rows());
 		assertEquals(7, batch.cols());
@@ -64,4 +82,31 @@ public class AllocationWeekBatchTest {
 		assertEquals("120", batch.getValue(3, 4));
 		assertEquals("0", batch.getValue(3, 5));
 	}	
+
+	@Test
+	public void testValidStart() throws ParseException {
+		AllocationWeekBatch batch = new AllocationWeekBatchMock();
+		
+		assertTrue(batch.validStart(dateFormat.parse("10/09/2013")));
+		assertFalse(batch.validStart(dateFormat.parse("11/12/2013")));
+	}
+	
+	@Test
+	public void testAdjustStart() throws ParseException {		
+		AllocationWeekBatch batch = new AllocationWeekBatchMock();
+		
+		assertEquals("26/08/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("01/01/2013"))));		
+		assertEquals("02/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("02/09/2013"))));
+		assertEquals("04/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("04/09/2013"))));
+		assertEquals("19/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("19/09/2013"))));
+	}
+	
+	@Test
+	public void testAdjustEnd() throws ParseException {		
+		AllocationWeekBatch batch = new AllocationWeekBatchMock();
+		
+		assertEquals("13/12/2013", dateFormat.format(batch.adjustEnd(dateFormat.parse("01/01/2014"))));		
+		assertEquals("11/11/2013", dateFormat.format(batch.adjustEnd(dateFormat.parse("11/11/2013"))));
+	}	
+	
 }
