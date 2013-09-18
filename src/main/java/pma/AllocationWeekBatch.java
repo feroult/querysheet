@@ -44,6 +44,8 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 	public void load(ResultSet rs)  {
 		try {
 			while (rs.next()) {				
+				String person = addPerson(rs.getString(COLUMN_NAME_PERSON));
+								
 				Date start = adjustStart(rs.getDate(COLUMN_NAME_START));
 
 				if(!validStart(start)) { 
@@ -51,8 +53,7 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 				}
 				
 				Date end = adjustEnd(rs.getDate(COLUMN_NAME_END));
-				Integer percentage = rs.getInt(COLUMN_NAME_PERCENTAGE);	
-				String person = rs.getString(COLUMN_NAME_PERSON);
+				Integer percentage = rs.getInt(COLUMN_NAME_PERCENTAGE);					
 				
 				addAllocation(person, start, end, percentage);
 			}
@@ -64,7 +65,19 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 		}			
 	}
 
+	private String addPerson(String person) {
+		if (!persons.contains(person)) {
+			persons.add(person);
+			allocation.put(person, new HashMap<String, List<AllocationWeek>>());
+		}
+		return person;
+	}
+
 	protected boolean validStart(Date date) {
+		if(date == null) {
+			return false;
+		}
+		
 		Calendar calendar = Calendar.getInstance();		
 		calendar.setTime(today());		
 		calendar.add(Calendar.MONTH, MAX_ALLOCATION_MONTHS);
@@ -89,7 +102,11 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 		return date;
 	}
 
-	protected Date adjustStart(Date date) {					
+	protected Date adjustStart(Date date) {
+		if(date == null) {
+			return null;
+		}
+		
 		Calendar calendar = Calendar.getInstance();		
 		calendar.setTime(today());		
 		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
@@ -112,10 +129,6 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 	}
 
 	private void mergePersonAllocation(String person, List<AllocationWeek> weeks) {
-		if (!allocation.containsKey(person)) {
-			allocation.put(person, new HashMap<String, List<AllocationWeek>>());
-		}
-
 		Map<String, List<AllocationWeek>> personAllocation = allocation.get(person);
 
 		for (AllocationWeek week : weeks) {
@@ -125,10 +138,6 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 
 			List<AllocationWeek> weekAllocation = personAllocation.get(week.getKey());
 			weekAllocation.add(week);
-		}
-
-		if (!persons.contains(person)) {
-			persons.add(person);
 		}
 	}
 
@@ -144,7 +153,6 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 
 	@Override
 	public int rows() {
-		// TODO Auto-generated method stub
 		return persons.size() + 1;
 	}
 
