@@ -29,6 +29,8 @@ import com.google.gdata.util.ServiceException;
 
 public class SpreadsheetAPI {
 
+	private static final int MAX_BATCH_ROWS = 500;
+
 	private SpreadsheetService spreadsheetService;
 
 	private SpreadsheetEntry spreadsheet;
@@ -46,8 +48,8 @@ public class SpreadsheetAPI {
 
 		try {
 			String spreadsheetURL = "https://spreadsheets.google.com/feeds/spreadsheets/" + key;
-			spreadsheet = spreadsheetService.getEntry(new URL(spreadsheetURL), SpreadsheetEntry.class);			
-			resetWorksheet();			
+			spreadsheet = spreadsheetService.getEntry(new URL(spreadsheetURL), SpreadsheetEntry.class);
+			resetWorksheet();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -132,11 +134,23 @@ public class SpreadsheetAPI {
 
 	public void batch(SpreadsheetBatch batch) {
 		try {
-			CellFeed cellFeed = queryCellFeedForBatch(batch);
-			CellFeed batchRequest = createBatchRequest(cellFeed, batch);
-			CellFeed batchResponse = executeBatchRequest(cellFeed, batchRequest);
+			int batchRows = 0;
+			int sentRows = 0;
+			
+			adjustWorksheetDimensions(batch);
+			
+			while (sentRows < batch.rows()) {
+				batchRows = (sentRows + MAX_BATCH_ROWS > batch.rows()) ? batch.rows() - sentRows : MAX_BATCH_ROWS;
 
-			checkBatchResponse(batchResponse);
+				CellFeed cellFeed = queryCellFeedForBatch(batch, sentRows, batchRows);
+				CellFeed batchRequest = createBatchRequest(cellFeed, batch, sentRows, batchRows);
+				CellFeed batchResponse = executeBatchRequest(cellFeed, batchRequest);
+
+				checkBatchResponse(batchResponse);
+				
+				sentRows += batchRows;
+			}
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -152,19 +166,19 @@ public class SpreadsheetAPI {
 		return batchResponse;
 	}
 
-	private CellFeed createBatchRequest(CellFeed cellFeed, SpreadsheetBatch batch) {
+	private CellFeed createBatchRequest(CellFeed cellFeed, SpreadsheetBatch batch, int sentRows, int batchRows) {
 		List<CellEntry> cellEntries = cellFeed.getEntries();
 
 		CellFeed batchRequest = new CellFeed();
 
 		int count = 0;
 
-		for (int i = 1; i <= batch.rows(); i++) {
+		for (int i = 1; i <= batchRows; i++) {
 			for (int j = 1; j <= batch.cols(); j++) {
 				BatchOperationType batchOperationType = BatchOperationType.UPDATE;
 				CellEntry sourceEntry = cellEntries.get(count);
 				CellEntry batchEntry = new CellEntry(sourceEntry);
-				batchEntry.changeInputValueLocal(batch.getValue(i, j));
+				batchEntry.changeInputValueLocal(batch.getValue(sentRows + i, j));
 				BatchUtils.setBatchId(batchEntry, String.valueOf(count));
 				BatchUtils.setBatchOperationType(batchEntry, batchOperationType);
 				batchRequest.getEntries().add(batchEntry);
@@ -176,13 +190,13 @@ public class SpreadsheetAPI {
 		return batchRequest;
 	}
 
-	private CellFeed queryCellFeedForBatch(SpreadsheetBatch batch) throws IOException, ServiceException {
-		adjustWorksheetDimensions(batch);
+	private CellFeed queryCellFeedForBatch(SpreadsheetBatch batch, int sentRows, int batchRows) throws IOException,
+			ServiceException {		
 
 		CellQuery query = new CellQuery(worksheet.getCellFeedUrl());
 
-		query.setMinimumRow(1);
-		query.setMaximumRow(batch.rows());
+		query.setMinimumRow(sentRows + 1);
+		query.setMaximumRow(sentRows + batchRows);
 		query.setMinimumCol(1);
 		query.setMaximumCol(batch.cols());
 
@@ -196,11 +210,11 @@ public class SpreadsheetAPI {
 			return;
 		}
 
-		if(worksheet.getColCount() < updateSet.cols()) {
+		if (worksheet.getColCount() < updateSet.cols()) {
 			worksheet.setColCount(updateSet.cols());
-		}		
-		
-		if(worksheet.getRowCount() < updateSet.rows()) {
+		}
+
+		if (worksheet.getRowCount() < updateSet.rows()) {
 			worksheet.setRowCount(updateSet.rows());
 		}
 
