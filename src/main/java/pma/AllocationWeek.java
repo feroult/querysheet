@@ -10,7 +10,7 @@ import java.util.List;
 public class AllocationWeek {
 
 	private Date weekStart;
-	
+
 	private Date weekEnd;
 
 	private Date allocationStart;
@@ -26,11 +26,11 @@ public class AllocationWeek {
 	}
 
 	public String getLabel() {
-		DateFormat dayMonthFormat = new SimpleDateFormat("dd/MM/yyyy");		
-		
+		DateFormat dayMonthFormat = new SimpleDateFormat("dd/MM/yyyy");
+
 		StringBuilder label = new StringBuilder();
 		label.append(dayMonthFormat.format(weekStart));
-		
+
 		return label.toString();
 	}
 
@@ -42,14 +42,15 @@ public class AllocationWeek {
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		return dateFormat.format(weekStart);
 	}
-	
+
 	public Date getWeekEnd() {
 		return weekEnd;
 	}
+
 	public void setAllocationStart(Date allocationStart) {
 		this.allocationStart = allocationStart;
 	}
-	
+
 	public Date getAllocationStart() {
 		return allocationStart == null ? weekStart : allocationStart;
 	}
@@ -61,35 +62,34 @@ public class AllocationWeek {
 	public Date getAllocationEnd() {
 		return allocationEnd == null ? weekEnd : allocationEnd;
 	}
-	
+
 	public int getPercentage() {
 		return percentage;
 	}
 
 	public int getAllocation() {
-		int daysWithoutAllocation = calculateStartDelay() + calculateEndAdvance();				
-		return (int)(percentage * 0.2 * (5 - daysWithoutAllocation));
+		int daysWithoutAllocation = calculateStartDelay() + calculateEndAdvance();
+		return (int) (percentage * 0.2 * (5 - daysWithoutAllocation));
 	}
 
 	private int calculateStartDelay() {
 		int startDelay = offsetToMonday(getAllocationStart());
-		if(startDelay > 0) {
+		if (startDelay > 0) {
 			startDelay = 0;
 		} else {
 			startDelay *= -1;
 		}
 		return startDelay;
-	}	
-		
+	}
+
 	private int calculateEndAdvance() {
 		int endAdvance = offsetToFriday(getAllocationEnd());
-		if(endAdvance < 0) {
+		if (endAdvance < 0) {
 			endAdvance = 0;
-		} 
+		}
 		return endAdvance;
-	}	
-			
-	
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -119,13 +119,13 @@ public class AllocationWeek {
 		} else if (!weekStart.equals(other.weekStart))
 			return false;
 		return true;
-	}	
-	
+	}
+
 	private static int offsetToMonday(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-		
+
 		switch (dayOfWeek) {
 		case Calendar.SUNDAY:
 			return 1;
@@ -146,8 +146,8 @@ public class AllocationWeek {
 	private static int offsetToFriday(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
-		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);		
-		
+		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
 		switch (dayOfWeek) {
 		case Calendar.SUNDAY:
 			return -2;
@@ -178,11 +178,11 @@ public class AllocationWeek {
 
 			if (weekMonday.before(start)) {
 				week.setAllocationStart(start);
-			} 
-			
+			}
+
 			if (weekFriday.after(end)) {
 				week.setAllocationEnd(end);
-			} 
+			}
 
 			weeks.add(week);
 
@@ -199,5 +199,4 @@ public class AllocationWeek {
 		weekMonday = calendar.getTime();
 		return weekMonday;
 	}
-
 }
