@@ -52,12 +52,12 @@ public class AllocationWeekBatchTest {
 		batch.load(new AllocationMockResultSet());
 
 		assertEquals("colaborador", batch.getValue(1, 1));
-		assertEquals("02/09 - 06/09", batch.getValue(1, 2));
-		assertEquals("09/09 - 13/09", batch.getValue(1, 3));
-		assertEquals("16/09 - 20/09", batch.getValue(1, 4));
-		assertEquals("23/09 - 27/09", batch.getValue(1, 5));
-		assertEquals("30/09 - 04/10", batch.getValue(1, 6));
-		assertEquals("07/10 - 11/10", batch.getValue(1, 7));
+		assertEquals("02/09/2013", batch.getValue(1, 2));
+		assertEquals("09/09/2013", batch.getValue(1, 3));
+		assertEquals("16/09/2013", batch.getValue(1, 4));
+		assertEquals("23/09/2013", batch.getValue(1, 5));
+		assertEquals("30/09/2013", batch.getValue(1, 6));
+		assertEquals("07/10/2013", batch.getValue(1, 7));
 	}
 
 	@Test

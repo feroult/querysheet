@@ -26,13 +26,10 @@ public class AllocationWeek {
 	}
 
 	public String getLabel() {
-		DateFormat dayMonthFormat = new SimpleDateFormat("dd/MM");		
+		DateFormat dayMonthFormat = new SimpleDateFormat("dd/MM/yyyy");		
 		
 		StringBuilder label = new StringBuilder();
-		
 		label.append(dayMonthFormat.format(weekStart));
-		label.append(" - ");
-		label.append(dayMonthFormat.format(weekEnd));
 		
 		return label.toString();
 	}
