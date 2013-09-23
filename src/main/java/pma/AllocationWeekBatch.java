@@ -14,9 +14,7 @@ import querysheet.ResultSetToSpreadsheetBatch;
 
 public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 
-	private static final int MAX_PREVIOUS_DAYS = -14;
-
-	private static final int MAX_ALLOCATION_MONTHS = 3;
+	private static final int MAX_ALLOCATION_MONTHS = 4;
 
 	private static final int ROW_OFFSET = 2;
 
@@ -109,8 +107,8 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 		
 		Calendar calendar = Calendar.getInstance();		
 		calendar.setTime(today());		
-		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-		calendar.add(Calendar.DAY_OF_MONTH, MAX_PREVIOUS_DAYS);
+		//calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
 				
 		if(date.before(calendar.getTime())) {
 			return calendar.getTime();

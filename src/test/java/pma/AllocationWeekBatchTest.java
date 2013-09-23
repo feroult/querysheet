@@ -11,8 +11,6 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import com.sun.org.apache.bcel.internal.generic.ALOAD;
-
 public class AllocationWeekBatchTest {
 
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -95,7 +93,7 @@ public class AllocationWeekBatchTest {
 	public void testAdjustStart() throws ParseException {		
 		AllocationWeekBatch batch = new AllocationWeekBatchMock();
 		
-		assertEquals("26/08/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("01/01/2013"))));		
+		assertEquals("01/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("01/01/2013"))));		
 		assertEquals("02/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("02/09/2013"))));
 		assertEquals("04/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("04/09/2013"))));
 		assertEquals("19/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("19/09/2013"))));
