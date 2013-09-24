@@ -13,44 +13,48 @@ import org.junit.Test;
 
 public class AllocationWeekBatchTest {
 
+	private static final String TODAY = "10/09/2013";
+
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-	
+
 	public class AllocationWeekBatchMock extends AllocationWeekBatch {
 
 		@Override
 		protected Date today() {
 			try {
-				return dateFormat.parse("10/09/2013");
+				return dateFormat.parse(TODAY);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}		
+		}
 	}
 
 	public class AllocationMockResultSet extends MockResultSet {
 		public AllocationMockResultSet() throws ParseException {
-			addRow("joao", "Acme", dateFormat.parse("04/09/2013"), dateFormat.parse("12/09/2013"), 100);
-			addRow("joao", "Ninjas", dateFormat.parse("16/09/2013"), dateFormat.parse("10/10/2013"), 100);
-			addRow("pedro", "Ninjas", dateFormat.parse("09/09/2013"), dateFormat.parse("20/09/2013"), 100);
-			addRow("pedro", "Beegos", dateFormat.parse("20/09/2013"), dateFormat.parse("20/09/2013"), 100);
+			addRow("joao", "Acme", "Proj A", dateFormat.parse("04/09/2013"), dateFormat.parse("12/09/2013"), 100);
+			addRow("joao", "Ninjas", "Proj B", dateFormat.parse("16/09/2013"), dateFormat.parse("10/10/2013"), 100);
+			addRow("pedro", "Ninjas", "Proj C", dateFormat.parse("09/09/2013"), dateFormat.parse("20/09/2013"), 100);
+			addRow("pedro", "Beegos", "Proj D", dateFormat.parse("20/09/2013"), dateFormat.parse("20/10/2013"), 100);
+			addRow("vanessa", "Beegos", "Proj D", dateFormat.parse("10/09/2013"), dateFormat.parse("17/09/2013"), 100);
+			addRow("victor", "Ninjas", "Proj B", dateFormat.parse("10/09/2013"), dateFormat.parse("28/09/2013"), 100);
 		}
 
-		private void addRow(String personId, String customer, Date start, Date end, int percentage) {
+		private void addRow(String personId, String customer, String project, Date start, Date end, int percentage) {
 			addRow();
 			addDate(AllocationWeekBatch.COLUMN_NAME_START, start);
 			addString(AllocationWeekBatch.COLUMN_NAME_CUSTOMER, customer);
+			addString(AllocationWeekBatch.COLUMN_NAME_PROJECT, project);
 			addString(AllocationWeekBatch.COLUMN_NAME_PERSON, personId);
 			addDate(AllocationWeekBatch.COLUMN_NAME_END, end);
 			addInt(AllocationWeekBatch.COLUMN_NAME_PERCENTAGE, percentage);
 		}
 	}
-	
+
 	@Test
 	public void testHeader() throws ParseException {
 		AllocationWeekBatch batch = new AllocationWeekBatchMock();
 		batch.load(new AllocationMockResultSet());
 
-		
 		assertEquals("Colaborador", batch.getValue(1, 1));
 		assertEquals("Cliente", batch.getValue(1, 2));
 		assertEquals("02/09/2013", batch.getValue(1, 3));
@@ -66,49 +70,64 @@ public class AllocationWeekBatchTest {
 		AllocationWeekBatch batch = new AllocationWeekBatchMock();
 		batch.load(new AllocationMockResultSet());
 
-		assertEquals(3, batch.rows());
-		assertEquals(7, batch.cols());
-		
+		assertEquals(5, batch.rows());
+		assertEquals(8, batch.cols());
+
 		assertEquals("joao", batch.getValue(2, 1));
 		assertEquals("Acme, Ninjas", batch.getValue(2, 2));
 		assertEquals("60", batch.getValue(2, 3));
 		assertEquals("80", batch.getValue(2, 4));
 		assertEquals("100", batch.getValue(2, 5));
 		assertEquals("100", batch.getValue(2, 6));
-		assertEquals("100", batch.getValue(2, 7));		
+		assertEquals("100", batch.getValue(2, 7));
 		assertEquals("80", batch.getValue(2, 8));
-				
+
 		assertEquals("pedro", batch.getValue(3, 1));
 		assertEquals("Beegos, Ninjas", batch.getValue(3, 2));
 		assertEquals("0", batch.getValue(3, 3));
 		assertEquals("100", batch.getValue(3, 4));
 		assertEquals("120", batch.getValue(3, 5));
-		assertEquals("0", batch.getValue(3, 6));
-	}	
+		assertEquals("100", batch.getValue(3, 6));
+		
+		assertEquals("vanessa (!)", batch.getValue(4, 1));
+		assertEquals("Beegos", batch.getValue(4, 2));
+		assertEquals("0", batch.getValue(4, 3));
+		assertEquals("80", batch.getValue(4, 4));
+		assertEquals("40", batch.getValue(4, 5));
+		assertEquals("0", batch.getValue(4, 6));
+		
+		assertEquals("victor", batch.getValue(5, 1));
+		assertEquals("Ninjas", batch.getValue(5, 2));
+		assertEquals("0", batch.getValue(5, 3));
+		assertEquals("80", batch.getValue(5, 4));
+		assertEquals("100", batch.getValue(5, 5));
+		assertEquals("100", batch.getValue(5, 6));
+		assertEquals("0", batch.getValue(5, 7));
+	}
 
 	@Test
 	public void testValidStart() throws ParseException {
 		AllocationWeekBatch batch = new AllocationWeekBatchMock();
-		
+
 		assertTrue(batch.validStart(dateFormat.parse("10/09/2013")));
 		assertFalse(batch.validStart(dateFormat.parse("11/02/2014")));
 	}
-	
+
 	@Test
-	public void testAdjustStart() throws ParseException {		
+	public void testAdjustStart() throws ParseException {
 		AllocationWeekBatch batch = new AllocationWeekBatchMock();
-		
-		assertEquals("01/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("01/01/2013"))));		
+
+		assertEquals("01/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("01/01/2013"))));
 		assertEquals("02/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("02/09/2013"))));
 		assertEquals("04/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("04/09/2013"))));
 		assertEquals("19/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("19/09/2013"))));
 	}
-	
-	public void testAdjustEnd() throws ParseException {		
+
+	public void testAdjustEnd() throws ParseException {
 		AllocationWeekBatch batch = new AllocationWeekBatchMock();
-		
-		assertEquals("13/12/2013", dateFormat.format(batch.adjustEnd(dateFormat.parse("01/01/2014"))));		
+
+		assertEquals("13/12/2013", dateFormat.format(batch.adjustEnd(dateFormat.parse("01/01/2014"))));
 		assertEquals("11/11/2013", dateFormat.format(batch.adjustEnd(dateFormat.parse("11/11/2013"))));
-	}	
-	
+	}
+
 }

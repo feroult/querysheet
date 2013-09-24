@@ -9,6 +9,8 @@ import java.util.List;
 
 public class AllocationWeek {
 
+	private static final String WEEK_KEY_FORMAT = "dd/MM/yyyy";
+
 	private Date weekStart;
 
 	private Date weekEnd;
@@ -26,7 +28,7 @@ public class AllocationWeek {
 	}
 
 	public String getLabel() {
-		DateFormat dayMonthFormat = new SimpleDateFormat("dd/MM/yyyy");
+		DateFormat dayMonthFormat = new SimpleDateFormat(WEEK_KEY_FORMAT);
 
 		StringBuilder label = new StringBuilder();
 		label.append(dayMonthFormat.format(weekStart));
@@ -39,7 +41,7 @@ public class AllocationWeek {
 	}
 
 	public String getKey() {
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		DateFormat dateFormat = new SimpleDateFormat(WEEK_KEY_FORMAT);
 		return dateFormat.format(weekStart);
 	}
 
@@ -166,8 +168,6 @@ public class AllocationWeek {
 	}
 
 	public static List<AllocationWeek> getWeeks(Date start, Date end, int percentage) {
-		Calendar calendar = Calendar.getInstance();
-
 		List<AllocationWeek> weeks = new ArrayList<AllocationWeek>();
 
 		Date weekMonday = adjustToMonday(start);
@@ -186,17 +186,24 @@ public class AllocationWeek {
 
 			weeks.add(week);
 
-			weekMonday = advanceWeek(calendar, weekMonday);
-			weekFriday = advanceWeek(calendar, weekFriday);
+			weekMonday = nextWeek(weekMonday);
+			weekFriday = nextWeek(weekFriday);
 		}
 
 		return weeks;
 	}
 
-	private static Date advanceWeek(Calendar calendar, Date weekMonday) {
+	public static Date nextWeek(Date weekMonday) {
+		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(weekMonday);
 		calendar.add(Calendar.DATE, 7);
 		weekMonday = calendar.getTime();
 		return weekMonday;
 	}
+
+	public static String key(Date date) {
+		DateFormat dateFormat = new SimpleDateFormat(WEEK_KEY_FORMAT);
+		return dateFormat.format(date);
+	}
+
 }

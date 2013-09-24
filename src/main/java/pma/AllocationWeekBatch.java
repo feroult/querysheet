@@ -20,11 +20,14 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 
 	private static final int COLUMN_OFFSET_TO_DATES = 3;
 
+	private static final String INTERNAL_CUSTOMER = "Dextra";
+	
 	protected static final String COLUMN_NAME_PERCENTAGE = "percentual";
 	protected static final String COLUMN_NAME_START = "data_inicio";
 	protected static final String COLUMN_NAME_END = "data_fim";
 	protected static final String COLUMN_NAME_PERSON = "colaborador";
 	protected static final String COLUMN_NAME_CUSTOMER = "cliente";
+	public static final String COLUMN_NAME_PROJECT = "projeto";
 
 	private static final String HEADER_PERSON = "Colaborador";
 	private static final String HEADER_CUSTOMER = "Cliente";
@@ -33,6 +36,10 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 	private static final int CUSTOMER_COLUMN = 2;
 	
 	private static final int HEADER_ROW = 1;
+
+	private static final int WARNING_WEEKS = 3;
+
+	private static final String WARNING_SYMBOL = " (!)";
 
 	private List<AllocationWeek> weeks;
 
@@ -57,10 +64,11 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 				}
 
 				String customer = rs.getString(COLUMN_NAME_CUSTOMER);
+				String project = rs.getString(COLUMN_NAME_PROJECT);
 				Date end = adjustEnd(rs.getDate(COLUMN_NAME_END));
 				Integer percentage = rs.getInt(COLUMN_NAME_PERCENTAGE);
 
-				addAllocation(person, customer, start, end, percentage);
+				addAllocation(person, customer, project, start, end, percentage);
 			}
 
 			weeks = AllocationWeek.getWeeks(firstStart, lastEnd, 0);
@@ -127,13 +135,13 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 		return new Date();
 	}
 
-	private void addAllocation(String person, String customer, Date start, Date end, int percentage) {
+	private void addAllocation(String person, String customer, String project, Date start, Date end, int percentage) {
 		checkAndSetFirstAndLastDates(start, end);
 		mergePersonAllocation(person, AllocationWeek.getWeeks(start, end, percentage));
-		mergePersonCustomer(person, customer);
+		mergePersonCustomerProject(person, customer, project);
 	}
 
-	private void mergePersonCustomer(String person, String customer) {
+	private void mergePersonCustomerProject(String person, String customer, String project) {
 		if(customer == null) {
 			return;
 		}				
@@ -142,7 +150,13 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 			personCustomers.put(person, new ArrayList<String>());
 		}
 		
-		List<String> customers = personCustomers.get(person);		
+		List<String> customers = personCustomers.get(person);
+		
+		if(customer.equals(INTERNAL_CUSTOMER)) {
+			customers.add(project);
+			return;
+		}
+		
 		customers.add(customer);		
 	}
 
@@ -192,7 +206,7 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 		String person = persons.get(row - ROW_OFFSET);
 
 		if (column == PERSON_COLUMN) {
-			return person;
+			return person + (allocationWarning(person) ? WARNING_SYMBOL : "");
 		}
 		if (column == CUSTOMER_COLUMN) {
 			return getCustomers(person);
@@ -200,6 +214,19 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 		
 		Integer totalAllocation = getAllocation(person, weeks.get(column - COLUMN_OFFSET_TO_DATES).getKey());
 		return totalAllocation.toString();
+	}
+
+	private boolean allocationWarning(String person) {
+		Date currentWeek = AllocationWeek.adjustToMonday(today());
+		
+		for(int i = 0; i < WARNING_WEEKS; i++) {
+			if(getAllocation(person, AllocationWeek.key(currentWeek)) == 0) {
+				return true;
+			}
+			currentWeek = AllocationWeek.nextWeek(currentWeek);
+		}		
+		
+		return false;
 	}
 
 	private String getCustomers(String person) {
