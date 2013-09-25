@@ -14,7 +14,7 @@ import querysheet.ResultSetToSpreadsheetBatch;
 
 public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 
-	private static final int MAX_ALLOCATION_MONTHS = 4;
+	private static final int MAX_ALLOCATION_WEEKS = 21;
 
 	private static final int ROW_OFFSET = 2;
 
@@ -93,7 +93,7 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(today());
-		calendar.add(Calendar.MONTH, MAX_ALLOCATION_MONTHS);
+		calendar.add(Calendar.WEEK_OF_YEAR, MAX_ALLOCATION_WEEKS);
 
 		if (date.after(calendar.getTime())) {
 			return false;
@@ -106,7 +106,7 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(today());
 		calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
-		calendar.add(Calendar.MONTH, MAX_ALLOCATION_MONTHS);
+		calendar.add(Calendar.WEEK_OF_YEAR, MAX_ALLOCATION_WEEKS);
 
 		if (date.after(calendar.getTime())) {
 			return calendar.getTime();
@@ -122,10 +122,9 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(today());
-		calendar.set(Calendar.DAY_OF_MONTH, 1);
-
+				
 		if (date.before(calendar.getTime())) {
-			return calendar.getTime();
+			return AllocationWeek.adjustToMonday(calendar.getTime());
 		}
 
 		return date;
@@ -152,12 +151,18 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 		
 		List<String> customers = personCustomers.get(person);
 		
-		if(customer.equals(INTERNAL_CUSTOMER)) {
-			customers.add(project);
+		if(customer.equals(INTERNAL_CUSTOMER)) {			
+			addIfNotAlreadyAdded(customers, project);
 			return;
 		}
 		
-		customers.add(customer);		
+		addIfNotAlreadyAdded(customers, customer);
+	}
+
+	private void addIfNotAlreadyAdded(List<String> list, String value) {
+		if(!list.contains(value)) {
+			list.add(value);
+		}
 	}
 
 	private void mergePersonAllocation(String person, List<AllocationWeek> weeks) {

@@ -57,12 +57,11 @@ public class AllocationWeekBatchTest {
 
 		assertEquals("Colaborador", batch.getValue(1, 1));
 		assertEquals("Cliente", batch.getValue(1, 2));
-		assertEquals("02/09/2013", batch.getValue(1, 3));
-		assertEquals("09/09/2013", batch.getValue(1, 4));
-		assertEquals("16/09/2013", batch.getValue(1, 5));
-		assertEquals("23/09/2013", batch.getValue(1, 6));
-		assertEquals("30/09/2013", batch.getValue(1, 7));
-		assertEquals("07/10/2013", batch.getValue(1, 8));
+		assertEquals("09/09/2013", batch.getValue(1, 3));
+		assertEquals("16/09/2013", batch.getValue(1, 4));
+		assertEquals("23/09/2013", batch.getValue(1, 5));
+		assertEquals("30/09/2013", batch.getValue(1, 6));
+		assertEquals("07/10/2013", batch.getValue(1, 7));
 	}
 
 	@Test
@@ -71,38 +70,36 @@ public class AllocationWeekBatchTest {
 		batch.load(new AllocationMockResultSet());
 
 		assertEquals(5, batch.rows());
-		assertEquals(8, batch.cols());
+		assertEquals(7, batch.cols());
 
 		assertEquals("joao", batch.getValue(2, 1));
 		assertEquals("Acme, Ninjas", batch.getValue(2, 2));
-		assertEquals("60", batch.getValue(2, 3));
-		assertEquals("80", batch.getValue(2, 4));
+		assertEquals("80", batch.getValue(2, 3));
+		assertEquals("100", batch.getValue(2, 4));
 		assertEquals("100", batch.getValue(2, 5));
 		assertEquals("100", batch.getValue(2, 6));
-		assertEquals("100", batch.getValue(2, 7));
-		assertEquals("80", batch.getValue(2, 8));
+		assertEquals("80", batch.getValue(2, 7));
 
 		assertEquals("pedro", batch.getValue(3, 1));
 		assertEquals("Beegos, Ninjas", batch.getValue(3, 2));
-		assertEquals("0", batch.getValue(3, 3));
-		assertEquals("100", batch.getValue(3, 4));
-		assertEquals("120", batch.getValue(3, 5));
+		assertEquals("100", batch.getValue(3, 3));
+		assertEquals("120", batch.getValue(3, 4));
+		assertEquals("100", batch.getValue(3, 5));
 		assertEquals("100", batch.getValue(3, 6));
+		assertEquals("100", batch.getValue(3, 7));
 		
 		assertEquals("vanessa (!)", batch.getValue(4, 1));
 		assertEquals("Beegos", batch.getValue(4, 2));
-		assertEquals("0", batch.getValue(4, 3));
-		assertEquals("80", batch.getValue(4, 4));
-		assertEquals("40", batch.getValue(4, 5));
-		assertEquals("0", batch.getValue(4, 6));
+		assertEquals("80", batch.getValue(4, 3));
+		assertEquals("40", batch.getValue(4, 4));
+		assertEquals("0", batch.getValue(4, 5));
 		
 		assertEquals("victor", batch.getValue(5, 1));
 		assertEquals("Ninjas", batch.getValue(5, 2));
-		assertEquals("0", batch.getValue(5, 3));
-		assertEquals("80", batch.getValue(5, 4));
+		assertEquals("80", batch.getValue(5, 3));
+		assertEquals("100", batch.getValue(5, 4));
 		assertEquals("100", batch.getValue(5, 5));
-		assertEquals("100", batch.getValue(5, 6));
-		assertEquals("0", batch.getValue(5, 7));
+		assertEquals("0", batch.getValue(5, 6));
 	}
 
 	@Test
@@ -117,9 +114,9 @@ public class AllocationWeekBatchTest {
 	public void testAdjustStart() throws ParseException {
 		AllocationWeekBatch batch = new AllocationWeekBatchMock();
 
-		assertEquals("01/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("01/01/2013"))));
-		assertEquals("02/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("02/09/2013"))));
-		assertEquals("04/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("04/09/2013"))));
+		assertEquals("09/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("01/01/2013"))));
+		assertEquals("09/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("04/09/2013"))));
+		assertEquals("10/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("10/09/2013"))));
 		assertEquals("19/09/2013", dateFormat.format(batch.adjustStart(dateFormat.parse("19/09/2013"))));
 	}
 
