@@ -7,9 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -58,7 +56,7 @@ public class AllocationWeekBatchTest {
 		AllocationWeekBatch batch = new AllocationWeekBatchMock();
 		batch.load(new AllocationMockResultSet());
 
-		assertBatchRow(batch, 1, "Colaborador", "Cliente", "09/09/2013", "16/09/2013", "23/09/2013", "30/09/2013", "07/10/2013");
+		assertBatchRow(batch, 1, "Status", "Colaborador", "Cliente", "09/09/2013", "16/09/2013", "23/09/2013", "30/09/2013", "07/10/2013");
 	}
 
 	@Test
@@ -69,11 +67,11 @@ public class AllocationWeekBatchTest {
 		assertEquals(6, batch.rows());
 		assertEquals(7, batch.cols());
 
-		assertBatchRow(batch, 2, "joao", "Acme, Ninjas", "80", "100", "100", "100", "80");
-		assertBatchRow(batch, 3, "pedro", "Beegos, Ninjas", "100", "120", "100", "100", "100");
-		assertBatchRow(batch, 4, "vanessa (?)", "Beegos", "80", "40", "0");
-		assertBatchRow(batch, 5, "victor", "Ninjas", "80", "100", "100", "0");
-		assertBatchRow(batch, 6, "zeh (!)", "Beegos", "0", "0", "0", "80");
+		assertBatchRow(batch, 2, "", "joao", "Acme, Ninjas", "80", "100", "100", "100", "80");
+		assertBatchRow(batch, 3, "", "pedro", "Beegos, Ninjas", "100", "120", "100", "100", "100");
+		assertBatchRow(batch, 4, "Aviso", "vanessa", "Beegos", "80", "40", "0");
+		assertBatchRow(batch, 5, "", "victor", "Ninjas", "80", "100", "100", "0");
+		assertBatchRow(batch, 6, "Alerta", "zeh", "Beegos", "0", "0", "0", "80");
 	}
 
 	private void assertBatchRow(AllocationWeekBatch batch, int row, String... columns) {

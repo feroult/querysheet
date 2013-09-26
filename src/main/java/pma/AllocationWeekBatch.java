@@ -18,7 +18,7 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 
 	private static final int ROW_OFFSET = 2;
 
-	private static final int COLUMN_OFFSET_TO_DATES = 3;
+	private static final int COLUMN_OFFSET_TO_DATES = 4;
 
 	private static final String INTERNAL_CUSTOMER = "Dextra";
 
@@ -27,21 +27,23 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 	protected static final String COLUMN_NAME_END = "data_fim";
 	protected static final String COLUMN_NAME_PERSON = "colaborador";
 	protected static final String COLUMN_NAME_CUSTOMER = "cliente";
-	public static final String COLUMN_NAME_PROJECT = "projeto";
+	protected static final String COLUMN_NAME_PROJECT = "projeto";
 
+	private static final String HEADER_STATUS = "Status";
 	private static final String HEADER_PERSON = "Colaborador";
 	private static final String HEADER_CUSTOMER = "Cliente";
 
-	private static final int PERSON_COLUMN = 1;
-	private static final int CUSTOMER_COLUMN = 2;
+	private static final int STATUS_COLUMN = 1;
+	private static final int PERSON_COLUMN = 2;
+	private static final int CUSTOMER_COLUMN = 3;
 
 	private static final int HEADER_ROW = 1;
 
 	private static final int WARNING_WEEKS = 3;
 
-	private static final String WARNING_SYMBOL = " (?)";
+	private static final String ALLOCATION_WARNING = "Aviso";
 
-	private static final String ALERT_SYMBOL = " (!)";
+	private static final String ALLOCATION_ALERT = "Alerta";
 
 	private List<AllocationWeek> weeks;
 
@@ -212,8 +214,11 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 	private String getValueInTable(int row, int column) {
 		String person = persons.get(row - ROW_OFFSET);
 
+		if (column == STATUS_COLUMN) {
+			return allocationStatus(person);
+		}
 		if (column == PERSON_COLUMN) {
-			return person + allocationWarning(person);
+			return person;
 		}
 		if (column == CUSTOMER_COLUMN) {
 			return getCustomers(person);
@@ -223,16 +228,16 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 		return totalAllocation.toString();
 	}
 
-	private String allocationWarning(String person) {
+	private String allocationStatus(String person) {
 		Date currentWeek = AllocationWeek.adjustToMonday(today());
 
 		for (int i = 0; i < WARNING_WEEKS; i++) {
 			if (getAllocation(person, AllocationWeek.key(currentWeek)) == 0) {
-				if(i == 0) {
-					return ALERT_SYMBOL;
-				} 
-				
-				return WARNING_SYMBOL;
+				if (i == 0) {
+					return ALLOCATION_ALERT;
+				}
+
+				return ALLOCATION_WARNING;
 			}
 			currentWeek = AllocationWeek.nextWeek(currentWeek);
 		}
@@ -280,6 +285,9 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 	}
 
 	private String getHeader(int column) {
+		if (column == STATUS_COLUMN) {
+			return HEADER_STATUS;
+		}
 		if (column == PERSON_COLUMN) {
 			return HEADER_PERSON;
 		}
