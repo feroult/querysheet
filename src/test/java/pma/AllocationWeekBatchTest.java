@@ -7,7 +7,9 @@ import static org.junit.Assert.assertTrue;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -73,41 +75,20 @@ public class AllocationWeekBatchTest {
 		assertEquals(6, batch.rows());
 		assertEquals(7, batch.cols());
 
-		assertEquals("joao", batch.getValue(2, 1));
-		assertEquals("Acme, Ninjas", batch.getValue(2, 2));
-		assertEquals("80", batch.getValue(2, 3));
-		assertEquals("100", batch.getValue(2, 4));
-		assertEquals("100", batch.getValue(2, 5));
-		assertEquals("100", batch.getValue(2, 6));
-		assertEquals("80", batch.getValue(2, 7));
+		assertAllocations(batch, 2, "joao", "Acme, Ninjas", "80", "100", "100", "100", "80");
+		assertAllocations(batch, 3, "pedro", "Beegos, Ninjas", "100", "120", "100", "100", "100");
+		assertAllocations(batch, 4, "vanessa (?)", "Beegos", "80", "40", "0");
+		assertAllocations(batch, 5, "victor", "Ninjas", "80", "100", "100", "0");
+		assertAllocations(batch, 6, "zeh (!)", "Beegos", "0", "0", "0", "80");
+	}
 
-		assertEquals("pedro", batch.getValue(3, 1));
-		assertEquals("Beegos, Ninjas", batch.getValue(3, 2));
-		assertEquals("100", batch.getValue(3, 3));
-		assertEquals("120", batch.getValue(3, 4));
-		assertEquals("100", batch.getValue(3, 5));
-		assertEquals("100", batch.getValue(3, 6));
-		assertEquals("100", batch.getValue(3, 7));
+	private void assertAllocations(AllocationWeekBatch batch, int row, String person, String project, String... allocations) {
+		assertEquals(person, batch.getValue(row, 1));
+		assertEquals(project, batch.getValue(row, 2));
 		
-		assertEquals("vanessa (?)", batch.getValue(4, 1));
-		assertEquals("Beegos", batch.getValue(4, 2));
-		assertEquals("80", batch.getValue(4, 3));
-		assertEquals("40", batch.getValue(4, 4));
-		assertEquals("0", batch.getValue(4, 5));
-		
-		assertEquals("victor", batch.getValue(5, 1));
-		assertEquals("Ninjas", batch.getValue(5, 2));
-		assertEquals("80", batch.getValue(5, 3));
-		assertEquals("100", batch.getValue(5, 4));
-		assertEquals("100", batch.getValue(5, 5));
-		assertEquals("0", batch.getValue(5, 6));
-		
-		assertEquals("zeh (!)", batch.getValue(6, 1));
-		assertEquals("Beegos", batch.getValue(6, 2));
-		assertEquals("0", batch.getValue(6, 3));
-		assertEquals("0", batch.getValue(6, 4));
-		assertEquals("0", batch.getValue(6, 5));
-		assertEquals("80", batch.getValue(6, 6));		
+		for (int i = 0; i < allocations.length; i++) {
+			assertEquals(allocations[i], batch.getValue(row, i+3));
+		}
 	}
 
 	@Test
