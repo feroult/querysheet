@@ -69,9 +69,9 @@ public class AllocationWeekBatchTest {
 
 		assertBatchRow(batch, 2, "", "joao", "Acme, Ninjas", "80", "100", "100", "100", "80");
 		assertBatchRow(batch, 3, "", "pedro", "Beegos, Ninjas", "100", "120", "100", "100", "100");
-		assertBatchRow(batch, 4, "Aviso", "vanessa", "Beegos", "80", "40", "0");
+		assertBatchRow(batch, 4, "Atenção", "vanessa", "Beegos", "80", "40", "0");
 		assertBatchRow(batch, 5, "", "victor", "Ninjas", "80", "100", "100", "0");
-		assertBatchRow(batch, 6, "Alerta", "zeh", "Beegos", "0", "0", "0", "80");
+		assertBatchRow(batch, 6, "Livre", "zeh", "Beegos", "0", "0", "0", "80");
 	}
 
 	private void assertBatchRow(AllocationWeekBatch batch, int row, String... columns) {

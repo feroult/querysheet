@@ -41,9 +41,9 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 
 	private static final int WARNING_WEEKS = 3;
 
-	private static final String ALLOCATION_WARNING = "Aviso";
+	private static final String ALLOCATION_WARNING = "Atenção";
 
-	private static final String ALLOCATION_ALERT = "Alerta";
+	private static final String ALLOCATION_FREE = "Livre";
 
 	private List<AllocationWeek> weeks;
 
@@ -234,7 +234,7 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 		for (int i = 0; i < WARNING_WEEKS; i++) {
 			if (getAllocation(person, AllocationWeek.key(currentWeek)) == 0) {
 				if (i == 0) {
-					return ALLOCATION_ALERT;
+					return ALLOCATION_FREE;
 				}
 
 				return ALLOCATION_WARNING;
