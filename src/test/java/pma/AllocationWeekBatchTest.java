@@ -58,13 +58,7 @@ public class AllocationWeekBatchTest {
 		AllocationWeekBatch batch = new AllocationWeekBatchMock();
 		batch.load(new AllocationMockResultSet());
 
-		assertEquals("Colaborador", batch.getValue(1, 1));
-		assertEquals("Cliente", batch.getValue(1, 2));
-		assertEquals("09/09/2013", batch.getValue(1, 3));
-		assertEquals("16/09/2013", batch.getValue(1, 4));
-		assertEquals("23/09/2013", batch.getValue(1, 5));
-		assertEquals("30/09/2013", batch.getValue(1, 6));
-		assertEquals("07/10/2013", batch.getValue(1, 7));
+		assertBatchRow(batch, 1, "Colaborador", "Cliente", "09/09/2013", "16/09/2013", "23/09/2013", "30/09/2013", "07/10/2013");
 	}
 
 	@Test
@@ -75,19 +69,16 @@ public class AllocationWeekBatchTest {
 		assertEquals(6, batch.rows());
 		assertEquals(7, batch.cols());
 
-		assertAllocations(batch, 2, "joao", "Acme, Ninjas", "80", "100", "100", "100", "80");
-		assertAllocations(batch, 3, "pedro", "Beegos, Ninjas", "100", "120", "100", "100", "100");
-		assertAllocations(batch, 4, "vanessa (?)", "Beegos", "80", "40", "0");
-		assertAllocations(batch, 5, "victor", "Ninjas", "80", "100", "100", "0");
-		assertAllocations(batch, 6, "zeh (!)", "Beegos", "0", "0", "0", "80");
+		assertBatchRow(batch, 2, "joao", "Acme, Ninjas", "80", "100", "100", "100", "80");
+		assertBatchRow(batch, 3, "pedro", "Beegos, Ninjas", "100", "120", "100", "100", "100");
+		assertBatchRow(batch, 4, "vanessa (?)", "Beegos", "80", "40", "0");
+		assertBatchRow(batch, 5, "victor", "Ninjas", "80", "100", "100", "0");
+		assertBatchRow(batch, 6, "zeh (!)", "Beegos", "0", "0", "0", "80");
 	}
 
-	private void assertAllocations(AllocationWeekBatch batch, int row, String person, String project, String... allocations) {
-		assertEquals(person, batch.getValue(row, 1));
-		assertEquals(project, batch.getValue(row, 2));
-		
-		for (int i = 0; i < allocations.length; i++) {
-			assertEquals(allocations[i], batch.getValue(row, i+3));
+	private void assertBatchRow(AllocationWeekBatch batch, int row, String... columns) {
+		for (int i = 0; i < columns.length; i++) {
+			assertEquals(columns[i], batch.getValue(row, i+1));
 		}
 	}
 
