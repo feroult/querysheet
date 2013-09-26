@@ -21,7 +21,7 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 	private static final int COLUMN_OFFSET_TO_DATES = 3;
 
 	private static final String INTERNAL_CUSTOMER = "Dextra";
-	
+
 	protected static final String COLUMN_NAME_PERCENTAGE = "percentual";
 	protected static final String COLUMN_NAME_START = "data_inicio";
 	protected static final String COLUMN_NAME_END = "data_fim";
@@ -34,19 +34,21 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 
 	private static final int PERSON_COLUMN = 1;
 	private static final int CUSTOMER_COLUMN = 2;
-	
+
 	private static final int HEADER_ROW = 1;
 
 	private static final int WARNING_WEEKS = 3;
 
-	private static final String WARNING_SYMBOL = " (!)";
+	private static final String WARNING_SYMBOL = " (?)";
+
+	private static final String ALERT_SYMBOL = " (!)";
 
 	private List<AllocationWeek> weeks;
 
 	private List<String> persons = new ArrayList<String>();
 
 	private Map<String, Map<String, List<AllocationWeek>>> allocation = new HashMap<String, Map<String, List<AllocationWeek>>>();
-	
+
 	private Map<String, List<String>> personCustomers = new HashMap<String, List<String>>();
 
 	private Date firstStart;
@@ -122,7 +124,7 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(today());
-				
+
 		if (date.before(calendar.getTime())) {
 			return AllocationWeek.adjustToMonday(calendar.getTime());
 		}
@@ -141,26 +143,26 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 	}
 
 	private void mergePersonCustomerProject(String person, String customer, String project) {
-		if(customer == null) {
+		if (customer == null) {
 			return;
-		}				
-		
-		if(!personCustomers.containsKey(person)) {
+		}
+
+		if (!personCustomers.containsKey(person)) {
 			personCustomers.put(person, new ArrayList<String>());
 		}
-		
+
 		List<String> customers = personCustomers.get(person);
-		
-		if(customer.equals(INTERNAL_CUSTOMER)) {			
+
+		if (customer.equals(INTERNAL_CUSTOMER)) {
 			addIfNotAlreadyAdded(customers, project);
 			return;
 		}
-		
+
 		addIfNotAlreadyAdded(customers, customer);
 	}
 
 	private void addIfNotAlreadyAdded(List<String> list, String value) {
-		if(!list.contains(value)) {
+		if (!list.contains(value)) {
 			list.add(value);
 		}
 	}
@@ -211,46 +213,50 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 		String person = persons.get(row - ROW_OFFSET);
 
 		if (column == PERSON_COLUMN) {
-			return person + (allocationWarning(person) ? WARNING_SYMBOL : "");
+			return person + allocationWarning(person);
 		}
 		if (column == CUSTOMER_COLUMN) {
 			return getCustomers(person);
 		}
-		
+
 		Integer totalAllocation = getAllocation(person, weeks.get(column - COLUMN_OFFSET_TO_DATES).getKey());
 		return totalAllocation.toString();
 	}
 
-	private boolean allocationWarning(String person) {
+	private String allocationWarning(String person) {
 		Date currentWeek = AllocationWeek.adjustToMonday(today());
-		
-		for(int i = 0; i < WARNING_WEEKS; i++) {
-			if(getAllocation(person, AllocationWeek.key(currentWeek)) == 0) {
-				return true;
+
+		for (int i = 0; i < WARNING_WEEKS; i++) {
+			if (getAllocation(person, AllocationWeek.key(currentWeek)) == 0) {
+				if(i == 0) {
+					return ALERT_SYMBOL;
+				} 
+				
+				return WARNING_SYMBOL;
 			}
 			currentWeek = AllocationWeek.nextWeek(currentWeek);
-		}		
-		
-		return false;
+		}
+
+		return "";
 	}
 
 	private String getCustomers(String person) {
-		if(!personCustomers.containsKey(person)) {
+		if (!personCustomers.containsKey(person)) {
 			return "";
 		}
-		
+
 		List<String> customers = personCustomers.get(person);
 		Collections.sort(customers);
-		
+
 		StringBuilder builder = new StringBuilder();
-		
-		for(String customer : customers) {
-			if(builder.length() > 0) {
+
+		for (String customer : customers) {
+			if (builder.length() > 0) {
 				builder.append(", ");
 			}
 			builder.append(customer);
 		}
-		
+
 		return builder.toString();
 	}
 
@@ -280,7 +286,7 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 		if (column == CUSTOMER_COLUMN) {
 			return HEADER_CUSTOMER;
 		}
-		
+
 		return weeks.get(column - COLUMN_OFFSET_TO_DATES).getLabel();
 	}
 }

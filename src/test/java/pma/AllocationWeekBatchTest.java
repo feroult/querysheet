@@ -37,6 +37,7 @@ public class AllocationWeekBatchTest {
 			addRow("pedro", "Beegos", "Proj D", dateFormat.parse("20/09/2013"), dateFormat.parse("20/10/2013"), 100);
 			addRow("vanessa", "Beegos", "Proj D", dateFormat.parse("10/09/2013"), dateFormat.parse("17/09/2013"), 100);
 			addRow("victor", "Ninjas", "Proj B", dateFormat.parse("10/09/2013"), dateFormat.parse("28/09/2013"), 100);
+			addRow("zeh", "Beegos", "Proj D", dateFormat.parse("01/10/2013"), dateFormat.parse("10/10/2013"), 100);
 		}
 
 		private void addRow(String personId, String customer, String project, Date start, Date end, int percentage) {
@@ -69,7 +70,7 @@ public class AllocationWeekBatchTest {
 		AllocationWeekBatch batch = new AllocationWeekBatchMock();
 		batch.load(new AllocationMockResultSet());
 
-		assertEquals(5, batch.rows());
+		assertEquals(6, batch.rows());
 		assertEquals(7, batch.cols());
 
 		assertEquals("joao", batch.getValue(2, 1));
@@ -88,7 +89,7 @@ public class AllocationWeekBatchTest {
 		assertEquals("100", batch.getValue(3, 6));
 		assertEquals("100", batch.getValue(3, 7));
 		
-		assertEquals("vanessa (!)", batch.getValue(4, 1));
+		assertEquals("vanessa (?)", batch.getValue(4, 1));
 		assertEquals("Beegos", batch.getValue(4, 2));
 		assertEquals("80", batch.getValue(4, 3));
 		assertEquals("40", batch.getValue(4, 4));
@@ -100,6 +101,13 @@ public class AllocationWeekBatchTest {
 		assertEquals("100", batch.getValue(5, 4));
 		assertEquals("100", batch.getValue(5, 5));
 		assertEquals("0", batch.getValue(5, 6));
+		
+		assertEquals("zeh (!)", batch.getValue(6, 1));
+		assertEquals("Beegos", batch.getValue(6, 2));
+		assertEquals("0", batch.getValue(6, 3));
+		assertEquals("0", batch.getValue(6, 4));
+		assertEquals("0", batch.getValue(6, 5));
+		assertEquals("80", batch.getValue(6, 6));		
 	}
 
 	@Test
