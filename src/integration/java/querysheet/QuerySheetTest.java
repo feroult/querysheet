@@ -1,8 +1,8 @@
 package querysheet;
 
 import static org.junit.Assert.assertEquals;
-import gapi.google.GoogleAPI;
-import gapi.google.SpreadsheetBatch;
+import gapi.GoogleAPI;
+import gapi.SpreadsheetBatch;
 
 import java.sql.SQLException;
 import java.util.List;

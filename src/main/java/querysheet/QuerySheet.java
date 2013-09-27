@@ -1,6 +1,6 @@
 package querysheet;
 
-import gapi.google.GoogleAPI;
+import gapi.GoogleAPI;
 
 import java.util.List;
 import java.util.Map;
