@@ -1,6 +1,8 @@
 package querysheet;
 
 import static org.junit.Assert.assertEquals;
+import gapi.google.GoogleAPI;
+import gapi.google.SpreadsheetBatch;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -11,9 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import querysheet.db.DatabaseAPI;
-import querysheet.google.GoogleAPI;
-import querysheet.google.MockTableBatch;
-import querysheet.google.SpreadsheetBatch;
 import querysheet.utils.Fixtures;
 
 public class QuerySheetTest {

@@ -1,5 +1,7 @@
 package querysheet;
 
+import gapi.google.GoogleAPI;
+
 import java.util.List;
 import java.util.Map;
 
@@ -7,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import querysheet.db.DatabaseAPI;
-import querysheet.google.GoogleAPI;
 import querysheet.utils.Setup;
 
 public class QuerySheet {

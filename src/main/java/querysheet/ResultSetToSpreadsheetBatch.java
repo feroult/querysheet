@@ -1,8 +1,8 @@
 package querysheet;
 
-import java.sql.ResultSet;
+import gapi.google.SpreadsheetBatch;
 
-import querysheet.google.SpreadsheetBatch;
+import java.sql.ResultSet;
 
 public interface ResultSetToSpreadsheetBatch extends SpreadsheetBatch {
 
