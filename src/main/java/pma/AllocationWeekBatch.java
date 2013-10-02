@@ -24,10 +24,10 @@ public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
 
 	protected static final String COLUMN_NAME_PERCENTAGE = "percentual";
 	protected static final String COLUMN_NAME_START = "data_inicio";
-	protected static final String COLUMN_NAME_END = "data_fim";
-	protected static final String COLUMN_NAME_PERSON = "colaborador";
-	protected static final String COLUMN_NAME_CUSTOMER = "cliente";
-	protected static final String COLUMN_NAME_PROJECT = "projeto";
+	protected static final String COLUMN_NAME_END = "data_termino";
+	protected static final String COLUMN_NAME_PERSON = "colaborador_nome";
+	protected static final String COLUMN_NAME_CUSTOMER = "cliente_nome";
+	protected static final String COLUMN_NAME_PROJECT = "projeto_nome";
 
 	private static final String HEADER_STATUS = "Status";
 	private static final String HEADER_PERSON = "Colaborador";
