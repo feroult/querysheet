@@ -11,6 +11,8 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import querysheet.mock.MockResultSet;
+
 public class AllocationWeekBatchTest {
 
 	private static final String TODAY = "10/09/2013";

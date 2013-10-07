@@ -1,15 +1,12 @@
-package querysheet;
+package querysheet.batch;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-public class TableToSpreadsheetBatch implements ResultSetToSpreadsheetBatch {	
+public class TableToSpreadsheetBatch extends ResultSetToSpreadsheetBatch {	
 
 	public void load(ResultSet rs) {
 		try {
@@ -45,21 +42,6 @@ public class TableToSpreadsheetBatch implements ResultSetToSpreadsheetBatch {
 	public String getValue(int row, int column) {
 		Object value = rows.get(row-1)[column-1];
 		return value == null ? "null" : formatString(value);
-	}
-
-	private String formatString(Object value) {
-		if(!Number.class.isInstance(value)) {
-			return value.toString();
-		}
-		
-		Locale locale  = new Locale("pt", "BR");
-		String pattern = "###.##";
-
-		DecimalFormat decimalFormat = (DecimalFormat)
-		        NumberFormat.getNumberInstance(locale);
-		decimalFormat.applyPattern(pattern);
-
-		return decimalFormat.format(value);
 	}
 
 	private void loadHeaders(ResultSet rs) throws SQLException {

@@ -8,6 +8,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import querysheet.batch.ResultSetToSpreadsheetBatch;
+import querysheet.batch.TableToSpreadsheetBatch;
 import querysheet.db.DatabaseAPI;
 import querysheet.utils.Setup;
 

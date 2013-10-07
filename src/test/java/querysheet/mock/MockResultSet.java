@@ -1,4 +1,4 @@
-package pma;
+package querysheet.mock;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -28,34 +28,56 @@ import java.util.Map;
 public class MockResultSet implements ResultSet {
 
 	public class Row {
-		private Map<String, String> strings = new HashMap<String, String>();
+		private Map<String, String> stringsMap = new HashMap<String, String>();
+		
+		private List<String> stringsList = new ArrayList<String>();
 
-		private Map<String, Date> dates = new HashMap<String, Date>();
+		private Map<String, Date> datesMap = new HashMap<String, Date>();
 
-		private Map<String, Integer> ints = new HashMap<String, Integer>();
+		private List<Date> datesList = new ArrayList<Date>();
+		
+		private Map<String, Integer> intsMap = new HashMap<String, Integer>();
+		
+		private List<Integer> intsList = new ArrayList<Integer>();
 
 		public void addString(String column, String value) {
-			strings.put(column, value);
+			stringsMap.put(column, value);
+			stringsList.add(value);
 		}
 
 		public void addDate(String column, java.util.Date value) {
-			dates.put(column, new Date(value.getTime()));
+			Date valueRightDateType = new Date(value.getTime());
+			datesMap.put(column, valueRightDateType);
+			datesList.add(valueRightDateType);
 		}
 
 		public void addInt(String column, Integer value) {
-			ints.put(column, value);
+			intsMap.put(column, value);
+			intsList.add(value);
 		}
 
 		public String getString(String column) {
-			return strings.get(column);
+			return stringsMap.get(column);
 		}
 
 		public Date getDate(String column) {
-			return dates.get(column);
+			return datesMap.get(column);
 		}
 
 		public Integer getInt(String column) {
-			return ints.get(column);
+			return intsMap.get(column);
+		}
+
+		public String getString(int columnIndex) {
+			return stringsList.get(columnIndex-1);
+		}
+
+		public int getInt(int columnIndex) {
+			return intsList.get(columnIndex-1);			
+		}
+
+		public Date getDate(int columnIndex) {
+			return datesList.get(columnIndex-1);			
 		}
 	}
 
@@ -116,7 +138,7 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public String getString(int columnIndex) throws SQLException {
-		return null;
+		return getCurrentGetRow().getString(columnIndex);
 	}
 
 	@Override
@@ -136,7 +158,7 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public int getInt(int columnIndex) throws SQLException {
-		return 0;
+		return getCurrentGetRow().getInt(columnIndex);
 	}
 
 	@Override
@@ -168,8 +190,7 @@ public class MockResultSet implements ResultSet {
 
 	@Override
 	public Date getDate(int columnIndex) throws SQLException {
-
-		return null;
+		return getCurrentGetRow().getDate(columnIndex);
 	}
 
 	@Override

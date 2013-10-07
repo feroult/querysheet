@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import querysheet.ResultSetToSpreadsheetBatch;
+import querysheet.batch.ResultSetToSpreadsheetBatch;
 
-public class AllocationWeekBatch implements ResultSetToSpreadsheetBatch {
+public class AllocationWeekBatch extends ResultSetToSpreadsheetBatch {
 
 	private static final int MAX_ALLOCATION_WEEKS = 21;
 

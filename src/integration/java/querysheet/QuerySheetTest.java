@@ -12,6 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import querysheet.batch.TableToSpreadsheetBatch;
 import querysheet.db.DatabaseAPI;
 import querysheet.utils.Fixtures;
 

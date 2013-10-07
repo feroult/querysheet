@@ -1,5 +1,7 @@
 package querysheet;
 
+import querysheet.batch.TableToSpreadsheetBatch;
+
 public class ThousandYearBatch extends TableToSpreadsheetBatch {
 
 	public String getValue(int row, int column) {
