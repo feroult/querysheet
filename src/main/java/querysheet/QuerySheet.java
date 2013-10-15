@@ -1,7 +1,9 @@
 package querysheet;
 
+import gapi.BatchOptions;
 import gapi.GoogleAPI;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +46,8 @@ public class QuerySheet {
 			List<Map<String, String>> queries = google.spreadsheet(key).worksheet("setup").asMap();
 
 			for (Map<String, String> querySetup : queries) {
-				time += processQuery(querySetup.get("query"), querySetup.get("spreadsheet"), querySetup.get("worksheet"), querySetup.get("batch"));
+				time += processQuery(querySetup.get("query"), querySetup.get("spreadsheet"), querySetup.get("worksheet"),
+						querySetup.get("batch"), createtBatchOptions(querySetup.get("options")));
 			}
 			
 			logger.info(String.format("total=%d ms", time));
@@ -54,9 +57,25 @@ public class QuerySheet {
 		}
 	}
 
-	private long processQuery(String query, String key, String worksheet, String batchClass) {
+	private BatchOptions[] createtBatchOptions(String optionsString) {
+		if(optionsString == null) {
+			return new BatchOptions[] {};
+		}
+		
+		optionsString = optionsString.toUpperCase();
+		
+		List<BatchOptions> options = new ArrayList<BatchOptions>();			
+		
+		if(optionsString.contains(BatchOptions.SHRINK.toString())) {
+			options.add(BatchOptions.SHRINK);
+		}
+		
+		return options.toArray(new BatchOptions[] {});
+	}
+
+	private long processQuery(String query, String key, String worksheet, String batchClass, BatchOptions[] batchOptions) {
 		long time = System.currentTimeMillis();
-		google.spreadsheet(key).worksheet(worksheet).batch(createBatch(query, batchClass));
+		google.spreadsheet(key).worksheet(worksheet).batch(createBatch(query, batchClass), batchOptions);
 		time = System.currentTimeMillis() - time;
 
 		logger.info(String.format("elapsed=%d ms, query=%s, spreadsheet=%s, worksheet=%s", time, truncate(query), key, worksheet));
