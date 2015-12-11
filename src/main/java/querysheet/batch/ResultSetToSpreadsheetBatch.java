@@ -1,6 +1,6 @@
 package querysheet.batch;
 
-import gapi.SpreadsheetBatch;
+import gapi.spredsheet.SpreadsheetBatch;
 
 import java.sql.ResultSet;
 import java.text.DecimalFormat;

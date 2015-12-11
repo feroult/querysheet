@@ -2,7 +2,7 @@ package querysheet;
 
 import static org.junit.Assert.assertEquals;
 import gapi.GoogleAPI;
-import gapi.SpreadsheetBatch;
+import gapi.spredsheet.SpreadsheetBatch;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -74,7 +74,7 @@ public class QuerySheetTest {
 			List<Map<String, String>> records2 = google.spreadsheet(destKey2).worksheet("people").asMap();
 			assertSpreadsheetRecord(destKey2, records2, 0, "11", "Person - 11", "31");
 			assertSpreadsheetRecord(destKey2, records2, 1, "12", "Person - 12", "32");
-			
+
 		} finally {
 			google.drive().delete(setupKey);
 			google.drive().delete(destKey1);
@@ -82,7 +82,7 @@ public class QuerySheetTest {
 		}
 	}
 
-	
+
 	@Test
 	public void testSimpleTransformer() {
 		String setupKey = google.drive().createSpreadsheet();
@@ -93,19 +93,19 @@ public class QuerySheetTest {
 					{ "select id, name, age from people where age < 31 order by id", destKey, "people", "querysheet.ThousandYearBatch" }};
 
 			google.spreadsheet(setupKey).worksheet("setup").batch(new MockTableBatch(setupTable));
-					
+
 			new QuerySheet().process(setupKey);
 
 			List<Map<String, String>> records = google.spreadsheet(destKey).worksheet("people").asMap();
 			assertSpreadsheetRecord(destKey, records, 0, "1", "Person - 1", "1021");
-			assertSpreadsheetRecord(destKey, records, 1, "2", "Person - 2", "1022");			
-			
+			assertSpreadsheetRecord(destKey, records, 1, "2", "Person - 2", "1022");
+
 		} finally {
 			google.drive().delete(setupKey);
 			google.drive().delete(destKey);
 		}
 	}
-	
+
 	private void assertSpreadsheetRecord(String destKey1, List<Map<String, String>> records, int row, String id,
 			String name, String age) {
 		Map<String, String> record = records.get(row);

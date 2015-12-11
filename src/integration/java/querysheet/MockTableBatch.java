@@ -1,6 +1,6 @@
 package querysheet;
 
-import gapi.SpreadsheetBatch;
+import gapi.spredsheet.SpreadsheetBatch;
 
 public class MockTableBatch implements SpreadsheetBatch {
 
