@@ -1,5 +1,6 @@
 package pma;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.DateFormat;
@@ -48,7 +49,8 @@ public class DeallocationWeekBatchTest {
     }
 
     @Test
-    public void testEndingProjects() throws ParseException {
+    @Ignore
+    public void testDeallocationWeeks() throws ParseException {
         DeallocationWeekBatch batch = new DeallocationWeekBatch();
         batch.load(new AllocationMockResultSet());
 
