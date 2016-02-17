@@ -1,6 +1,5 @@
 package pma;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.DateFormat;
@@ -32,9 +31,9 @@ public class DeallocationWeekBatchTest {
         public AllocationMockResultSet() throws ParseException {
             addRow("joao", "Acme", "Proj A", dateFormat.parse("01/01/2016"), dateFormat.parse("20/02/2016"), 100);
             addRow("joao", "Ninjas", "Proj B", dateFormat.parse("01/01/2016"), dateFormat.parse("10/03/2016"), 100);
-            addRow("pedro", "Ninjas", "Proj C", dateFormat.parse("09/09/2013"), dateFormat.parse("10/03/2016"), 100);
-            addRow("pedro", "Beegos", "Proj D", dateFormat.parse("01/01/2016"), dateFormat.parse("20/10/2016"), 100);
-            addRow("vanessa", "Beegos", "Proj D", dateFormat.parse("01/01/2016"), dateFormat.parse("20/10/2016"), 100);
+            addRow("pedro", "Ninjas", "Proj C", dateFormat.parse("01/01/2016"), dateFormat.parse("10/03/2016"), 100);
+            addRow("pedro", "Beegos", "Proj D", dateFormat.parse("01/01/2016"), dateFormat.parse("10/03/2016"), 100);
+            addRow("vanessa", "Beegos", "Proj D", dateFormat.parse("01/01/2016"), dateFormat.parse("20/05/2016"), 100);
             addRow("victor", "Ninjas", "Proj B", dateFormat.parse("01/01/2016"), dateFormat.parse("20/10/2016"), 100);
             addRow("zeh", "Beegos", "Proj D", dateFormat.parse("01/01/2016"), dateFormat.parse("20/10/2016"), 100);
         }
@@ -45,19 +44,20 @@ public class DeallocationWeekBatchTest {
         DeallocationWeekBatch batch = new DeallocationWeekBatch();
         batch.load(new AllocationMockResultSet());
 
-        assertBatchRow(batch, 1, "Cliente", "15/02/2016", "", "22/02/2016", "", "29/02/2016", "", "07/03/2016", "");
+        assertBatchRow(batch, 1, "Cliente", "14/03/2016", "", "23/05/2016", "");
     }
 
     @Test
-    @Ignore
     public void testDeallocationWeeks() throws ParseException {
         DeallocationWeekBatch batch = new DeallocationWeekBatch();
         batch.load(new AllocationMockResultSet());
 
         assertEquals(3, batch.rows());
-        //assertEquals(7, batch.cols());
+        assertEquals(5, batch.cols());
 
-        assertBatchRow(batch, 2, "Acme", "1", "joao", "", "");
+        assertBatchRow(batch, 2, "Acme, Beegos, Ninjas", "2", "joao, pedro");
+        assertBatchRow(batch, 3, "Beegos", "", "", "1", "vanessa");
+
     }
 
     private void assertBatchRow(DeallocationWeekBatch batch, int row, String... columns) {

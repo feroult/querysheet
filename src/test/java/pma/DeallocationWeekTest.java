@@ -13,7 +13,7 @@ public class DeallocationWeekTest {
 
     @Test
     public void testMergePersonsAndCustomers() {
-        DeallocationWeek deallocationWeek = new DeallocationWeek(persons(), personCustomers());
+        DeallocationWeek deallocationWeek = new DeallocationWeek(persons(), personCustomers(), "", 0);
 
         assertEquals("Acme, Hackers, Ninjas", deallocationWeek.getCustomerGroup(0));
         assertEquals(2, deallocationWeek.getPersonGroupCount(0));

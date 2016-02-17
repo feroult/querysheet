@@ -8,6 +8,10 @@ public class DeallocationWeek {
 
     private final Map<String, List<String>> personCustomers;
 
+    private String weekLabel;
+
+    private int rowOffset;
+
     private final List<String> customers;
 
     private Map<String, List<String>> deallocationByCustomer;
@@ -16,9 +20,11 @@ public class DeallocationWeek {
 
     private Map<String, List<String>> deallocationByGroup;
 
-    public DeallocationWeek(List<String> persons, Map<String, List<String>> personCustomers) {
+    public DeallocationWeek(List<String> persons, Map<String, List<String>> personCustomers, String weekLabel, int rowOffset) {
         this.persons = persons;
         this.personCustomers = personCustomers;
+        this.weekLabel = weekLabel;
+        this.rowOffset = rowOffset;
         this.customers = new ArrayList<>();
         this.deallocationByCustomer = new HashMap<>();
         this.groups = new ArrayList<>();
@@ -32,6 +38,11 @@ public class DeallocationWeek {
         for (String customer : customers) {
             List<String> group = new ArrayList<>();
             List<String> groupPersons = mergePersons(customer, group);
+
+            if (group.size() == 0) {
+                continue;
+            }
+
             Collections.sort(group);
             Collections.sort(groupPersons);
             String groupLabel = commaSeparated(group);
@@ -91,6 +102,14 @@ public class DeallocationWeek {
         Collections.sort(customers);
     }
 
+    public List<String> getCustomerGroups() {
+        return groups;
+    }
+
+    public int getCustomerGroupsCount() {
+        return getCustomerGroups().size();
+    }
+
     public String getCustomerGroup(int i) {
         return groups.get(i);
     }
@@ -103,4 +122,13 @@ public class DeallocationWeek {
     public int getPersonGroupCount(int i) {
         return deallocationByGroup.get(getCustomerGroup(i)).size();
     }
+
+    public int getRowOffset() {
+        return rowOffset;
+    }
+
+    public String getWeekLabel() {
+        return weekLabel;
+    }
+
 }
