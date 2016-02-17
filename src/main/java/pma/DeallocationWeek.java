@@ -61,7 +61,7 @@ public class DeallocationWeek {
             } else {
                 first = false;
             }
-            sb.append(s);
+            sb.append(s != null ? s.trim() : s);
         }
         return sb.toString();
     }

@@ -1,10 +1,7 @@
 package pma;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DeallocationWeekBatch extends AllocationWeekBatch {
 
@@ -16,7 +13,7 @@ public class DeallocationWeekBatch extends AllocationWeekBatch {
 
     private static final String HEADER_CUSTOMER = "Cliente";
 
-    private Map<Integer, List<String>> deallocations = new HashMap<>();
+    private Map<Integer, List<String>> deallocations = new TreeMap<>();
 
     private Map<String, Boolean> unallocated = new HashMap<>();
 
@@ -110,9 +107,9 @@ public class DeallocationWeekBatch extends AllocationWeekBatch {
         }
 
         int weekIndex = column / 2 - 1;
-        int groupIndex = row - weekIndex - ROW_OFFSET_TO_CUSTOMERS;
-
         DeallocationWeek deallocationWeek = deallocationWeeks.get(weekIndex);
+
+        int groupIndex = row - deallocationWeek.getRowOffset() - ROW_OFFSET_TO_CUSTOMERS;
 
         if (row - 2 < deallocationWeek.getRowOffset() || groupIndex >= deallocationWeek.getCustomerGroupsCount()) {
             return "";
