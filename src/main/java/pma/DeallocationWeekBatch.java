@@ -1,5 +1,7 @@
 package pma;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.sql.ResultSet;
 import java.util.*;
 
@@ -7,9 +9,13 @@ public class DeallocationWeekBatch extends AllocationWeekBatch {
 
     private static final int COLUMN_OFFSET_TO_DATES = 1;
 
-    private static final int ROW_OFFSET_TO_CUSTOMERS = 2;
+    private static final int ROW_OFFSET_TO_CUSTOMERS = 3;
 
     private static final int CUSTOMER_COLUMN = 1;
+
+    private static final int TODAY_COLUMN = 2;
+
+    private static final int FREE_ROW = 2;
 
     private static final String HEADER_CUSTOMER = "Cliente";
 
@@ -20,6 +26,8 @@ public class DeallocationWeekBatch extends AllocationWeekBatch {
     private List<DeallocationWeek> deallocationWeeks = new ArrayList<>();
 
     private List<String> customerGroups = new ArrayList<>();
+
+    private List<String> freeToday = new ArrayList<>();
 
     @Override
     public void load(ResultSet rs) {
@@ -38,7 +46,14 @@ public class DeallocationWeekBatch extends AllocationWeekBatch {
                 }
 
                 if (weekIndex == 0) {
-                    previousAllocation.put(person, getAllocation(person, weekIndex));
+                    Integer allocation = getAllocation(person, weekIndex);
+
+                    if (allocation.equals(0)) {
+                        unallocated.put(person, Boolean.TRUE);
+                        freeToday.add(person.trim());
+                    }
+
+                    previousAllocation.put(person, allocation);
                     continue;
                 }
 
@@ -78,12 +93,12 @@ public class DeallocationWeekBatch extends AllocationWeekBatch {
 
     @Override
     public int rows() {
-        return customerGroups.size() + 1;
+        return customerGroups.size() + 2;
     }
 
     @Override
     public int cols() {
-        return deallocationWeeks.size() * 2 + 1;
+        return deallocationWeeks.size() + 2;
     }
 
     @Override
@@ -92,32 +107,47 @@ public class DeallocationWeekBatch extends AllocationWeekBatch {
             return HEADER_CUSTOMER;
         }
 
-        if (column % 2 == 0) {
-            int weekIndex = column / 2 - 1;
-            DeallocationWeek deallocationWeek = deallocationWeeks.get(weekIndex);
-            return deallocationWeek.getWeekLabel();
+        if (column == TODAY_COLUMN) {
+            return String.format("Hoje (%d)", freeToday.size());
         }
-        return "";
+
+        int weekIndex = column - 3;
+        DeallocationWeek deallocationWeek = deallocationWeeks.get(weekIndex);
+
+        return String.format("%s (%d)", deallocationWeek.getWeekLabel(), deallocationWeek.getTotalPersonCount());
     }
 
     @Override
     protected String getValueInTable(int row, int column) {
+        if (row == FREE_ROW) {
+            if (column == CUSTOMER_COLUMN) {
+                return "Livre";
+            }
+
+            if (column == TODAY_COLUMN) {
+                return StringUtils.join(freeToday, ", ");
+            }
+
+            return "";
+        }
+
+        if (column == TODAY_COLUMN) {
+            return "";
+        }
+
         if (column == CUSTOMER_COLUMN) {
             return customerGroups.get(row - ROW_OFFSET_TO_CUSTOMERS);
         }
 
-        int weekIndex = column / 2 - 1;
+        int weekIndex = column - 3;
         DeallocationWeek deallocationWeek = deallocationWeeks.get(weekIndex);
 
         int groupIndex = row - deallocationWeek.getRowOffset() - ROW_OFFSET_TO_CUSTOMERS;
 
-        if (row - 2 < deallocationWeek.getRowOffset() || groupIndex >= deallocationWeek.getCustomerGroupsCount()) {
+        if (row - 3 < deallocationWeek.getRowOffset() || groupIndex >= deallocationWeek.getCustomerGroupsCount()) {
             return "";
         }
 
-        if (column % 2 == 0) {
-            return deallocationWeek.getPersonGroupCount(groupIndex) + "";
-        }
         return deallocationWeek.getPersonGroup(groupIndex);
     }
 }

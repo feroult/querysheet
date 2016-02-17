@@ -29,6 +29,7 @@ public class DeallocationWeekBatchTest {
 
     public class AllocationMockResultSet extends AllocationMockBase {
         public AllocationMockResultSet() throws ParseException {
+            addRow("gotardo", "Acme", "Proj A", dateFormat.parse("01/01/2016"), dateFormat.parse("10/01/2016"), 100);
             addRow("joao", "Acme", "Proj A", dateFormat.parse("01/01/2016"), dateFormat.parse("20/02/2016"), 100);
             addRow("joao", "Ninjas", "Proj B", dateFormat.parse("01/01/2016"), dateFormat.parse("10/03/2016"), 100);
             addRow("pedro", "Ninjas", "Proj C", dateFormat.parse("01/01/2016"), dateFormat.parse("10/03/2016"), 100);
@@ -44,7 +45,7 @@ public class DeallocationWeekBatchTest {
         DeallocationWeekBatch batch = new DeallocationWeekBatch();
         batch.load(new AllocationMockResultSet());
 
-        assertBatchRow(batch, 1, "Cliente", "14/03/2016", "", "23/05/2016", "");
+        assertBatchRow(batch, 1, "Cliente", "14/03/2016 (2)", "23/05/2016 (1)");
     }
 
     @Test
@@ -52,11 +53,12 @@ public class DeallocationWeekBatchTest {
         DeallocationWeekBatch batch = new DeallocationWeekBatch();
         batch.load(new AllocationMockResultSet());
 
-        assertEquals(3, batch.rows());
-        assertEquals(5, batch.cols());
+        assertEquals(4, batch.rows());
+        assertEquals(4, batch.cols());
 
-        assertBatchRow(batch, 2, "Acme, Beegos, Ninjas", "2", "joao, pedro");
-        assertBatchRow(batch, 3, "Beegos", "", "", "1", "vanessa");
+        assertBatchRow(batch, 2, "Livre", "gotardo");
+        assertBatchRow(batch, 3, "Acme, Beegos, Ninjas", "", "joao, pedro");
+        assertBatchRow(batch, 4, "Beegos", "", "", "vanessa");
 
     }
 

@@ -131,4 +131,11 @@ public class DeallocationWeek {
         return weekLabel;
     }
 
+    public int getTotalPersonCount() {
+        int total = 0;
+        for (int i = 0; i < getCustomerGroupsCount(); i++) {
+            total += getPersonGroupCount(i);
+        }
+        return total;
+    }
 }
