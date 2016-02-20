@@ -125,7 +125,7 @@ public class DeallocationWeekBatch extends AllocationWeekBatch {
             }
 
             if (column == TODAY_COLUMN) {
-                return StringUtils.join(freeToday, ", ");
+                return StringUtils.join(freeToday, "\n");
             }
 
             return "";

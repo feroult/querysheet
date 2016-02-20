@@ -1,5 +1,7 @@
 package pma;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.*;
 
 public class DeallocationWeek {
@@ -45,25 +47,10 @@ public class DeallocationWeek {
 
             Collections.sort(group);
             Collections.sort(groupPersons);
-            String groupLabel = commaSeparated(group);
+            String groupLabel = StringUtils.join(group, ", ");
             groups.add(groupLabel);
             deallocationByGroup.put(groupLabel, groupPersons);
         }
-    }
-
-    private String commaSeparated(List<String> strings) {
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-
-        for (String s : strings) {
-            if (!first) {
-                sb.append(", ");
-            } else {
-                first = false;
-            }
-            sb.append(s != null ? s.trim() : s);
-        }
-        return sb.toString();
     }
 
     private List<String> mergePersons(String customer, List<String> group) {
@@ -116,7 +103,7 @@ public class DeallocationWeek {
 
     public String getPersonGroup(int i) {
         List<String> persons = deallocationByGroup.get(getCustomerGroup(i));
-        return commaSeparated(persons);
+        return StringUtils.join(persons, "\n");
     }
 
     public int getPersonGroupCount(int i) {
