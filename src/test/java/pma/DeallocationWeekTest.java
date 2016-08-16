@@ -17,11 +17,11 @@ public class DeallocationWeekTest {
 
         assertEquals("Acme, Hackers, Ninjas", deallocationWeek.getCustomerGroup(0));
         assertEquals(2, deallocationWeek.getPersonGroupCount(0));
-        assertEquals("joao, pedro", deallocationWeek.getPersonGroup(0));
+        assertEquals("joao\npedro", deallocationWeek.getPersonGroup(0));
 
         assertEquals("Beegos", deallocationWeek.getCustomerGroup(1));
         assertEquals(2, deallocationWeek.getPersonGroupCount(1));
-        assertEquals("vanessa, zeh", deallocationWeek.getPersonGroup(1));
+        assertEquals("vanessa\nzeh", deallocationWeek.getPersonGroup(1));
     }
 
     private Map<String, List<String>> personCustomers() {
