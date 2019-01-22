@@ -43,19 +43,17 @@ public class QuerySheet {
         db = new DatabaseAPI();
 
         try {
-            int time = 0;
-            int row = 1;
+            int  time = 0;
+            int  row = 1;
+            Date data = new Date();
 
             List<Map<String, String>> queries = google.spreadsheet(key).worksheet("setup").asMap();
 
             for (Map<String, String> querySetup : queries) {
 
                 row++;
-                Date data = new Date();
+                data = new Date();
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
-                String spreadsheet = querySetup.get("spreadsheet");
-                String worksheet = querySetup.get("worksheet");
 
                 try {
                     time += processQuery(querySetup.get("query"), querySetup.get("spreadsheet"), querySetup.get("worksheet"),
