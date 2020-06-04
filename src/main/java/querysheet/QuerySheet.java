@@ -45,9 +45,9 @@ public class QuerySheet {
         try {
             int  time = 0;
             int  row = 1;
-            Date data = new Date();
+            Date data;
 
-            List<Map<String, String>> queries = google.spreadsheet(key).worksheet("setup").asMap();
+            List<Map<String, String>> queries = google.spreadsheet(key).worksheet("Setup").asMap();
 
             for (Map<String, String> querySetup : queries) {
 
@@ -59,10 +59,10 @@ public class QuerySheet {
                     time += processQuery(querySetup.get("query"), querySetup.get("spreadsheet"), querySetup.get("worksheet"),
                             querySetup.get("batch"), createtBatchOptions(querySetup.get("options")));
 
-                    google.spreadsheet(key).worksheet("setup").setValue(row,1,"Success - "+sdf.format(data));
+                    google.spreadsheet(key).worksheet("Setup").setValue(row,1,"Success - "+sdf.format(data));
 
                 }catch (Exception e) { 
-                    google.spreadsheet(key).worksheet("setup").setValue(row,1,"Error       - "+sdf.format(data));
+                    google.spreadsheet(key).worksheet("Setup").setValue(row,1,"Error       - "+sdf.format(data));
                 }
 
             }
