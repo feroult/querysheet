@@ -61,25 +61,31 @@ public class QuerySheet {
                     google.spreadsheet(key).worksheet("Setup").setValue(row + 2, 1, "Success - " + sdf.format(data));
                     row++;
                 } catch (RuntimeException e) {
-                    String message = e.getMessage();
-                    int index = message.indexOf("\n");
-                    String split = message.substring(index + 1);
+                    try {
+                        String message = e.getMessage();
+                        int index = message.indexOf("\n");
+                        String split = message.substring(index + 1);
 
-                    JsonParser parser = new JsonParser();
-                    JsonObject json = (JsonObject) parser.parse(split);
+                        JsonParser parser = new JsonParser();
+                        JsonObject json = (JsonObject) parser.parse(split);
 
-                    if (json.get("code").getAsInt() == 429) {
-                        try {
-                            logger.info("Quota read requests exceeded, waiting to continue...");
-                            Thread.sleep(SLEEP_MS);
-                            logger.info("Resuming...");
-                        } catch (InterruptedException ignored) {}
-                    } else {
+                        if (json.get("code").getAsInt() == 429) {
+                            try {
+                                logger.info("Quota read requests exceeded, waiting to continue...");
+                                Thread.sleep(SLEEP_MS);
+                                logger.info("Resuming...");
+                            } catch (InterruptedException ignored) {}
+                        } else {
+                            google.spreadsheet(key).worksheet("Setup").setValue(row + 2, 1, "Error       - " + sdf.format(data));
+                            row++;
+                        }
+                    } catch (Exception ex) {
                         google.spreadsheet(key).worksheet("Setup").setValue(row + 2, 1, "Error       - " + sdf.format(data));
                         row++;
                     }
                 } catch (Exception e) {
                     google.spreadsheet(key).worksheet("Setup").setValue(row + 2, 1, "Error       - " + sdf.format(data));
+                    row++;
                 }
             }
             logger.info(String.format("total=%d ms", time));
