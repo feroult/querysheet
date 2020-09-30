@@ -1,8 +1,10 @@
 package querysheet;
 
-
 import com.github.feroult.gapi.BatchOptions;
 import com.github.feroult.gapi.GoogleAPI;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import querysheet.batch.ResultSetToSpreadsheetBatch;
@@ -10,13 +12,14 @@ import querysheet.batch.TableToSpreadsheetBatch;
 import querysheet.db.DatabaseAPI;
 import querysheet.utils.Setup;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class QuerySheet {
 
     private static final int TRUNCATE_LENGTH = 10;
+
+    private static final int SLEEP_MS = 30000;
 
     private static Logger logger = LoggerFactory.getLogger(QuerySheet.class);
 
@@ -41,16 +44,51 @@ public class QuerySheet {
 
         try {
             int time = 0;
+            int row = 0;
+            Date data;
 
-            List<Map<String, String>> queries = google.spreadsheet(key).worksheet("setup").asMap();
+            List<Map<String, String>> queries = google.spreadsheet(key).worksheet("Setup").asMap();
 
-            for (Map<String, String> querySetup : queries) {
-                time += processQuery(querySetup.get("query"), querySetup.get("spreadsheet"), querySetup.get("worksheet"),
-                        querySetup.get("batch"), createtBatchOptions(querySetup.get("options")));
+            while (row < queries.size()) {
+                data = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                Map<String, String> querySetup = queries.get(row);
+
+                try {
+                    time += processQuery(querySetup.get("query"), querySetup.get("spreadsheet"), querySetup.get("worksheet"),
+                            querySetup.get("batch"), createtBatchOptions(querySetup.get("options")));
+
+                    google.spreadsheet(key).worksheet("Setup").setValue(row + 2, 1, "Success - " + sdf.format(data));
+                    row++;
+                } catch (RuntimeException e) {
+                    try {
+                        String message = e.getMessage();
+                        int index = message.indexOf("\n");
+                        String split = message.substring(index + 1);
+
+                        JsonParser parser = new JsonParser();
+                        JsonObject json = (JsonObject) parser.parse(split);
+
+                        if (json.get("code").getAsInt() == 429) {
+                            try {
+                                logger.info("Quota read requests exceeded, waiting to continue...");
+                                Thread.sleep(SLEEP_MS);
+                                logger.info("Resuming...");
+                            } catch (InterruptedException ignored) {}
+                        } else {
+                            google.spreadsheet(key).worksheet("Setup").setValue(row + 2, 1, "Error       - " + sdf.format(data));
+                            row++;
+                        }
+                    } catch (Exception ex) {
+                        google.spreadsheet(key).worksheet("Setup").setValue(row + 2, 1, "Error       - " + sdf.format(data));
+                        row++;
+                    }
+                } catch (Exception e) {
+                    google.spreadsheet(key).worksheet("Setup").setValue(row + 2, 1, "Error       - " + sdf.format(data));
+                    row++;
+                }
             }
-
             logger.info(String.format("total=%d ms", time));
-
         } finally {
             db.close();
         }
